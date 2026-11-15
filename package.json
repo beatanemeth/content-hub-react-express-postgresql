@@ -7,7 +7,17 @@
     "prettier": "prettier --check .",
     "prettier:format": "prettier --write .",
     "lint": "eslint .",
-    "lint:prettier-conflicts": "eslint-config-prettier src/server.ts"
+    "lint:prettier-conflicts": "eslint-config-prettier src/server.ts",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{js,ts}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,yaml,yml}": [
+      "prettier --write"
+    ]
   },
   "volta": {
     "node": "24.14.0"
@@ -18,6 +28,8 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-unused-imports": "^4.4.1",
     "globals": "^17.14.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.6.0",
     "prettier": "3.10.1",
     "prettier-plugin-organize-imports": "4.3.0",
     "typescript": "~6.0.3",
