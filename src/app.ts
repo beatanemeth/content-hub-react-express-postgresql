@@ -1,5 +1,5 @@
 import express from 'express';
-import { notFoundHandler } from './middleware/errorHandlers.ts';
+import { errorHandler, notFoundHandler } from './middleware/errorHandlers.ts';
 import { postRouter } from './routes/postRoutes.ts';
 
 /* The application object: holds the routes (and, later, the middleware); server.ts starts it. */
@@ -25,5 +25,8 @@ app.get('/', (_req, res) => {
  */
 app.use('/api/blog', postRouter);
 
-/* No path: it matches every request, so it must come after all routes. */
+/* After all routes: reached only when no route above sent a response. */
 app.use(notFoundHandler);
+
+/* Registered last, so it catches errors from everything above. */
+app.use(errorHandler);
