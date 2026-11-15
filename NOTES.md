@@ -219,3 +219,162 @@ Blog post endpoints:
 | `DELETE` | `/api/blog/:id` | Delete a post  | Delete on `/blog/:id`         |
 
 Tested through the REST Client extension in VS Code (`blog.http`).
+
+<br>
+
+## Integrate a database (PostgreSQL)
+
+**Goal:** move the data from the in-memory array to PostgreSQL. The endpoints and the contract stay the same; only the data layer behind the routes changes.
+
+- **Data survives restarts:** PostgreSQL keeps its data in a Docker volume, so the data is still there after the server or the container restarts.
+
+**Decision:** the `pg` client with `@types/pg`, PostgreSQL alone in Docker, and the settings in a `.env` file read by `node --env-file=.env`. See details: [Database set-up](docs/notes/info_db_setup.md).
+
+<br>
+
+### Order of work
+
+The work is split over two branches. This branch adds the database and connects the server to it; the route handlers do not change.
+
+**This branch (`chore/database-docker`):**
+
+1. **Container:** `docker-compose.yaml` and `.env.example`. Start the container and connect with `psql`.
+2. **Schema and seed data:** SQL files in `db/init/` create the tables and load the CSV files from `db/seed/`. The container runs them only when the volume is empty.
+3. **Connection pool:** install `pg` and add `src/db/pool.ts`. The server checks the connection at start-up.
+
+**Next branch (SQL queries):**
+
+4. **Handlers:** move each handler to a SQL query, one at a time. Each handler becomes `async` and wraps its query in `try/catch`, which answers `500` when the query fails.
+5. **Clean-up:** delete the in-memory array and the id counter. PostgreSQL creates the ids.
+
+<br>
+
+### Docker set-up
+
+| File                  | Committed         | Purpose                                                           |
+| --------------------- | ----------------- | ----------------------------------------------------------------- |
+| `docker-compose.yaml` | Yes               | Defines the PostgreSQL container.                                 |
+| `.env.example`        | Yes               | Lists the variable names with sample values.                      |
+| `.env`                | No (`.gitignore`) | Holds the real values. You create it as a copy of `.env.example`. |
+
+See details: [Key lines in `docker-compose.yaml`](docs/notes/info_db_setup.md#key-lines-in-docker-composeyaml).
+
+<br>
+
+### Check: the database container
+
+**Port clash:** only one container can publish port 5432. Stop any other PostgreSQL container first, or `up` fails with "port is already allocated".
+
+In the project folder:
+
+```bash
+cp .env.example .env    # then set real values in .env
+docker compose up -d
+docker compose ps
+docker compose exec db sh -c 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "SELECT version();"'
+```
+
+- **`sh -c`:** runs the command inside the container, where `POSTGRES_USER` and `POSTGRES_DB` are already set from `.env`. The command works as it is, with no values to replace.
+- **Single quotes outside:** the host shell passes the whole command to the container unchanged.
+- **Double quotes inside:** the container's shell fills in the two variables and passes the SQL to `psql` as one argument.
+- **Never type `<user>` as it is:** in bash, `<` reads input from a file, so `-U <user>` fails with "user: No such file or directory".
+
+**Expected result:**
+
+- `docker compose ps` shows the `db` service with the status `Up`.
+- `psql` prints one row that starts with `PostgreSQL 18.`.
+- `psql` does not ask for a password. It runs inside the container and connects through a local socket, which the image trusts. The password matters only for connections from outside the container, such as the Express app.
+
+<br>
+
+### Check: schema and seed data
+
+The container runs the files in `db/init/` on its first start, when the volume is empty. To run them again, use `docker compose down -v` and then `docker compose up -d`.
+
+In the project folder:
+
+```bash
+docker compose logs db | grep -iE 'error|COPY'
+docker compose exec db sh -c 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "\dt"'
+docker compose exec db sh -c 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "SELECT count(*) FROM post;"'
+```
+
+- **`\dt`:** a `psql` command that lists the tables.
+
+**Expected result:**
+
+- The logs show one `COPY <n>` line per CSV file and no `ERROR` line.
+- `\dt` lists 12 tables, from `category` to `venue`.
+- `count(*)` returns `12`, the number of rows in `db/seed/post.csv`.
+
+<br>
+
+### Stop and reset
+
+```bash
+docker compose down
+```
+
+- stops and removes the container; the volume and its data stay.
+
+```bash
+docker compose down -v
+```
+
+- also deletes the volume, so the next `up` starts with an empty database.
+
+<br>
+
+### Install the database client
+
+Run in the repository root:
+
+```bash
+npm install pg
+npm install --save-dev @types/pg
+```
+
+- **`pg` in `dependencies`:** the server needs it at run time to talk to PostgreSQL, like `express`.
+- **`@types/pg` in `devDependencies`:** only the type checker and the editor use the type definitions.
+
+**Expected result:** `package.json` lists `pg` under `dependencies` and `@types/pg` under `devDependencies`.
+
+<br>
+
+### Connect the server at start-up
+
+Load `.env` in both scripts, so `process.env.DATABASE_URL` is set. Run in the repository root:
+
+```bash
+npm pkg set scripts.dev="node --env-file=.env --watch src/server.ts"
+npm pkg set scripts.start="node --env-file=.env src/server.ts"
+```
+
+| File             | Change                                                                                 |
+| ---------------- | -------------------------------------------------------------------------------------- |
+| `src/db/pool.ts` | Creates one shared `pg.Pool` from `DATABASE_URL` and keeps `date` columns as text.     |
+| `src/server.ts`  | Runs `SELECT 1` through the pool before `app.listen`; a failed query stops the server. |
+
+- **Top-level `await`:** `server.ts` is an ES module (`"type": "module"`), so it can wait for the query outside a function.
+- **Why at start-up:** without the check, the server starts and the first request fails instead.
+
+<br>
+
+### Check: the server reaches the database
+
+With the container running, in the repository root:
+
+```bash
+npm run dev
+```
+
+**Expected result:** `Server listening on http://localhost:8000`, as before.
+
+Stop the server, then stop the container and start the server again:
+
+```bash
+docker compose stop
+npm run dev
+```
+
+**Expected result:** an `ECONNREFUSED 127.0.0.1:5432` error and no `Server listening` line. `--watch` waits for a file change instead of exiting; stop it with `Ctrl+C`. Start the container again with `docker compose start`.
