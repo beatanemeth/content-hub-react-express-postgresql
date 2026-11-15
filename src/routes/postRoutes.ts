@@ -163,3 +163,26 @@ postRouter.put('/:id', (req, res) => {
 
   res.json(post);
 });
+
+/**
+ * @desc Delete a post
+ * @route DELETE /api/blog/:id
+ * @success 204, no body
+ * @errors 404 'Post not found'
+ * @access Public
+ */
+postRouter.delete('/:id', (req, res) => {
+  const id = Number(req.params.id);
+  const index = posts.findIndex((item) => item.id === id);
+
+  if (index === -1) {
+    res.status(404).json({ error: 'Post not found' });
+    return;
+  }
+
+  /* splice removes one element at this position and changes the array in place. */
+  posts.splice(index, 1);
+
+  /* 204 No Content: success with no body, so end() instead of json(). */
+  res.status(204).end();
+});

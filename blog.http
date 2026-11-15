@@ -109,3 +109,13 @@ Content-Type: application/json
   "category_ids": [1, 2],
   "tag_ids": [1]
 }
+
+
+// ---------------------------------
+// Test: DELETE /api/blog/:id
+// ---------------------------------
+### Delete a post
+DELETE {{baseUrl}}/2
+
+### Delete a post that does not exist (404)
+DELETE {{baseUrl}}/999
