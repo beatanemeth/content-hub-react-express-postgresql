@@ -7,6 +7,7 @@ import {
   updatePost,
 } from '../controllers/postController.ts';
 import { checkPostId } from '../middleware/checkPostId.ts';
+import { checkPostInput } from '../middleware/checkPostInput.ts';
 
 /*
  * Paths here are relative to where app.ts mounts the router (/api/blog).
@@ -18,8 +19,8 @@ postRouter.get('/', getAllPosts);
 
 postRouter.get('/:id', checkPostId, getPostById);
 
-postRouter.post('/', createPost);
+postRouter.post('/', checkPostInput, createPost);
 
-postRouter.put('/:id', checkPostId, updatePost);
+postRouter.put('/:id', checkPostId, checkPostInput, updatePost);
 
 postRouter.delete('/:id', checkPostId, deletePost);

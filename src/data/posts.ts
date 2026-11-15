@@ -12,3 +12,14 @@ export interface Post {
   category_ids: number[];
   tag_ids: number[];
 }
+
+/* The checked body of POST and PUT: checkPostInput builds it; createPost and updatePost read it. */
+export interface PostInput {
+  title: string;
+  summary: string;
+  body: string;
+  author_id: number;
+  published_on: string;
+  category_ids: number[];
+  tag_ids: number[];
+}
