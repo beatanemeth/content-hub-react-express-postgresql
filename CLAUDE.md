@@ -22,25 +22,33 @@ Update this tree whenever a file or folder is added.
 │   ├── rules/           # engineer, error handling, maintainer, ui, validation, writer rules
 │   ├── skills/          # /commit
 │   └── settings.json    # permissions
+├── db/
+│   ├── init/            # 01-schema.sql, 02-seed.sql: run by the container when the volume is empty
+│   └── seed/            # CSV files loaded with COPY; the source of truth for the data
 ├── docs/
 │   ├── claude/          # additional files for Claude used in .claude/rules/
 │   │   └── assets/      # page mock-ups
-│   └── notes/           # set-up manuals linked from NOTES.md
+│   └── notes/           # set-up manuals and decision notes linked from NOTES.md
+│       └── info_db_setup.md  # database client, Docker and .env decisions
 ├── .husky/
 │   ├── pre-commit       # runs lint-staged
 │   └── prepare-commit-msg  # conventional merge messages
 ├── src/
 │   ├── data/
 │   │   └── posts.ts     # Post interface, in-memory sample posts, id counter
+│   ├── db/
+│   │   └── pool.ts      # the shared pg.Pool, built from DATABASE_URL
 │   ├── routes/
 │   │   └── postRoutes.ts  # postRouter: the /api/blog endpoints
 │   ├── app.ts           # the Express app: routes, later middleware
-│   └── server.ts        # starts the app on port 8000
+│   └── server.ts        # checks the database, then starts the app on port 8000
+├── .env.example         # variable names; copy to .env, which is never committed
 ├── .gitignore
 ├── .prettierignore
 ├── .prettierrc.json     # Prettier options and plugins
 ├── blog.http            # REST Client requests for the /api/blog endpoints
 ├── CLAUDE.md
+├── docker-compose.yaml  # the PostgreSQL 18 container
 ├── eslint.config.js     # ESLint rules for TypeScript and Node.js
 ├── NOTES.md             # build log: commands, files, checks, in build order
 ├── package-lock.json
@@ -57,13 +65,13 @@ Update this tree whenever a file or folder is added.
 
 Read the matching file before you work on that layer. The rules in `.claude/rules/` link to the same files.
 
-| Work on                                     | Read                                                                                                                                                                             |
-| ------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Backend phases**                          | [evolution_roadmap_backend.md](docs/claude/evolution_roadmap_backend.md)                                                                                                         |
-| **API routes and responses**                | [api_endpoints.md](docs/claude/api_endpoints.md), [create_post_example.md](docs/claude/create_post_example.md)                                                                   |
-| **Frontend phases**                         | [evolution_roadmap_frontend.md](docs/claude/evolution_roadmap_frontend.md)                                                                                                       |
-| **Frontend pages, components and styling**  | [ui_specifications.md](docs/claude/ui_specifications.md), [ui_visual_identity.md](.claude/rules/ui_visual_identity.md), [brand_style_guide.md](docs/claude/brand_style_guide.md) |
-| **Database schema and placeholder content** | [mock_schema.sql](docs/claude/mock_schema.sql), [mock_data.js](docs/claude/mock_data.js)                                                                                         |
+| Work on                                    | Read                                                                                                                                                                                                                 |
+| ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Backend phases**                         | [evolution_roadmap_backend.md](docs/claude/evolution_roadmap_backend.md)                                                                                                                                             |
+| **API routes and responses**               | [api_endpoints.md](docs/claude/api_endpoints.md), [create_post_example.md](docs/claude/create_post_example.md)                                                                                                       |
+| **Frontend phases**                        | [evolution_roadmap_frontend.md](docs/claude/evolution_roadmap_frontend.md)                                                                                                                                           |
+| **Frontend pages, components and styling** | [ui_specifications.md](docs/claude/ui_specifications.md), [ui_visual_identity.md](.claude/rules/ui_visual_identity.md), [brand_style_guide.md](docs/claude/brand_style_guide.md)                                     |
+| **Database schema and seed data**          | [01-schema.sql](db/init/01-schema.sql), [db/seed/](db/seed/) (the source of truth); [mock_schema.sql](docs/claude/mock_schema.sql) and [mock_data.js](docs/claude/mock_data.js) are a subset for the in-memory phase |
 
 <br>
 
