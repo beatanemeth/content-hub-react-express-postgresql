@@ -41,6 +41,8 @@ Update this tree whenever a file or folder is added.
 │   │   └── posts.ts     # Post interface: the shape of one post row
 │   ├── db/
 │   │   └── pool.ts      # the shared pg.Pool, built from DATABASE_URL
+│   ├── middleware/
+│   │   └── errorHandlers.ts  # notFoundHandler (JSON 404) and errorHandler (JSON 400 and 500)
 │   ├── routes/
 │   │   └── postRoutes.ts  # postRouter: maps each /api/blog path and method to a handler
 │   ├── app.ts           # the Express app: routes, later middleware
