@@ -65,6 +65,20 @@ Content-Type: application/json
   "tag_ids": [1]
 }
 
+### Create a post with an author that does not exist (400)
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "title": "My Coffee Journey",
+  "summary": "Exploring unique brews",
+  "body": "Content here...",
+  "author_id": 999,
+  "published_on": "2026-11-14",
+  "category_ids": [1, 2],
+  "tag_ids": [1]
+}
+
 
 // ---------------------------------
 // Test: PUT /api/blog/:id
