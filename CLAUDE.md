@@ -29,7 +29,8 @@ Update this tree whenever a file or folder is added.
 │   ├── claude/          # additional files for Claude used in .claude/rules/
 │   │   └── assets/      # page mock-ups
 │   └── notes/           # set-up manuals and decision notes linked from NOTES.md
-│       └── info_db_setup.md  # database client, Docker and .env decisions
+│       ├── info_db_setup.md  # database client, Docker and .env decisions
+│       └── manual_coding_guidelines.md  # Prettier, ESLint, Husky and lint-staged set-up
 ├── .husky/
 │   ├── pre-commit       # runs lint-staged
 │   └── prepare-commit-msg  # conventional merge messages
