@@ -29,17 +29,20 @@ Update this tree whenever a file or folder is added.
 │   ├── claude/          # additional files for Claude used in .claude/rules/
 │   │   └── assets/      # page mock-ups
 │   └── notes/           # set-up manuals and decision notes linked from NOTES.md
-│       └── info_db_setup.md  # database client, Docker and .env decisions
+│       ├── info_db_setup.md  # database client, Docker and .env decisions
+│       └── manual_coding_guidelines.md  # Prettier, ESLint, Husky and lint-staged set-up
 ├── .husky/
 │   ├── pre-commit       # runs lint-staged
 │   └── prepare-commit-msg  # conventional merge messages
 ├── src/
+│   ├── controllers/
+│   │   └── postController.ts  # the handlers of the /api/blog endpoints
 │   ├── data/
 │   │   └── posts.ts     # Post interface: the shape of one post row
 │   ├── db/
 │   │   └── pool.ts      # the shared pg.Pool, built from DATABASE_URL
 │   ├── routes/
-│   │   └── postRoutes.ts  # postRouter: the /api/blog endpoints
+│   │   └── postRoutes.ts  # postRouter: maps each /api/blog path and method to a handler
 │   ├── app.ts           # the Express app: routes, later middleware
 │   └── server.ts        # checks the database, then starts the app on port 8000
 ├── .env.example         # variable names; copy to .env, which is never committed
