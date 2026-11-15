@@ -1,5 +1,6 @@
 import express from 'express';
-import { nextPostId, posts, type Post } from '../data/posts.ts';
+import pg from 'pg';
+import { posts, type Post } from '../data/posts.ts';
 import { pool } from '../db/pool.ts';
 
 /* An average adult reading speed for plain text. */
@@ -129,9 +130,11 @@ postRouter.get('/:id', async (req, res) => {
  * @success 201, the new post
  * @errors 400 'Title, summary and body must be non-empty strings'
  * @errors 400 'author_id must be a number; category_ids and tag_ids must be lists of numbers'
+ * @errors 400 'Author, category or tag does not exist'
+ * @errors 500 'Internal Server Error'
  * @access Public
  */
-postRouter.post('/', (req, res) => {
+postRouter.post('/', async (req, res) => {
   const error = findPostBodyError(req.body);
 
   if (error) {
@@ -149,20 +152,55 @@ postRouter.post('/', (req, res) => {
     tag_ids,
   } = req.body;
 
-  const post: Post = {
-    id: nextPostId(),
-    title: title.trim(),
-    summary: summary.trim(),
-    body: body.trim(),
-    author_id,
-    published_on,
-    updated_at: new Date().toISOString(),
-    category_ids,
-    tag_ids,
-  };
-  posts.push(post);
+  /* BEGIN and COMMIT must run on the same connection; pool.query() may pick a different one for each call. */
+  const client = await pool.connect();
 
-  res.status(201).json(withMinutesToRead(post));
+  try {
+    await client.query('BEGIN');
+
+    /* RETURNING id gives back the id PostgreSQL just created, so the link rows can use it. */
+    const inserted = await client.query<{ id: number }>(
+      `INSERT INTO post (title, summary, body, author_id, published_on, updated_at)
+       VALUES ($1, $2, $3, $4, $5, now())
+       RETURNING id`,
+      [title.trim(), summary.trim(), body.trim(), author_id, published_on],
+    );
+    const postId = inserted.rows[0].id;
+
+    for (const categoryId of category_ids) {
+      await client.query(
+        'INSERT INTO post_category (post_id, category_id) VALUES ($1, $2)',
+        [postId, categoryId],
+      );
+    }
+    for (const tagId of tag_ids) {
+      await client.query(
+        'INSERT INTO post_tag (post_id, tag_id) VALUES ($1, $2)',
+        [postId, tagId],
+      );
+    }
+
+    await client.query('COMMIT');
+
+    const result = await client.query<Post>(`${SELECT_POST} WHERE p.id = $1`, [
+      postId,
+    ]);
+    res.status(201).json(withMinutesToRead(result.rows[0]));
+  } catch (error) {
+    /* Undo every insert of this request. */
+    await client.query('ROLLBACK');
+
+    /* 23503 = foreign key violation: an author, category or tag id does not exist. */
+    if (error instanceof pg.DatabaseError && error.code === '23503') {
+      res.status(400).json({ error: 'Author, category or tag does not exist' });
+    } else {
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  } finally {
+    /* Runs after success and after an error: without it, the pool runs out of connections. */
+    client.release();
+  }
 });
 
 /**
