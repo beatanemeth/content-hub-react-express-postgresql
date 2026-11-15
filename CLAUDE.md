@@ -63,7 +63,8 @@ Update this tree whenever a file or folder is added.
 │   │   │   ├── Header.tsx       # the logo (to Home) and the main navigation
 │   │   │   └── Layout.tsx       # the shared page frame; the matched page appears at <Outlet />
 │   │   ├── pages/
-│   │   │   └── Home.tsx         # the home page at /
+│   │   │   ├── Home.tsx         # the home page at /
+│   │   │   └── NotFound.tsx     # the not-found page for any unknown URL
 │   │   ├── App.tsx          # the root component: the route table
 │   │   ├── globals.css      # Tailwind import, the @theme colours and fonts, the focus outline
 │   │   └── main.tsx         # mounts App into #root in index.html; imports globals.css
