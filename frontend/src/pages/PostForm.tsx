@@ -1,14 +1,14 @@
-import { type SubmitEvent, useState } from 'react';
+import { type SubmitEvent, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
+import { getPost, type Post } from '../api/posts.ts';
 import Button from '../components/Button.tsx';
 import {
   CATEGORIES,
   type Category,
-  POSTS,
   STAFF,
   type Tag,
   TAGS,
-} from '../data/posts.ts';
+} from '../data/lists.ts';
 import NotFound from './NotFound.tsx';
 
 const FIELD_STYLE = 'flex flex-col gap-2';
@@ -79,10 +79,40 @@ export default function PostForm() {
   // Only /blog/:id/edit has an id; /blog/new has none
   const { id } = useParams();
   const isEditing = id !== undefined;
-  const post = POSTS.find((item) => item.id === Number(id));
+  const [post, setPost] = useState<Post | null>(null);
+  const [isNotFound, setIsNotFound] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  if (isEditing && post === undefined) {
+  useEffect(() => {
+    // A new post starts empty, so there is nothing to load
+    if (!isEditing) {
+      return;
+    }
+
+    async function loadPost() {
+      try {
+        const data = await getPost(Number(id));
+
+        if (data === null) {
+          setIsNotFound(true);
+        } else {
+          setPost(data);
+        }
+      } catch (err) {
+        setError((err as Error).message);
+      }
+    }
+
+    loadPost();
+  }, [id, isEditing]);
+
+  if (isNotFound) {
     return <NotFound />;
+  }
+
+  // defaultValue is read only on the first render, so the form waits for the post
+  if (isEditing && post === null) {
+    return <p className="text-xl leading-relaxed">{error ?? 'Loading…'}</p>;
   }
 
   // Saving arrives with the API; until then, stop the browser from reloading the page

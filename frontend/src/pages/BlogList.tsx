@@ -1,9 +1,28 @@
+import { useEffect, useState } from 'react';
+import { getPosts, type Post } from '../api/posts.ts';
 import Button from '../components/Button.tsx';
 import PostCard from '../components/PostCard.tsx';
-import { POSTS } from '../data/posts.ts';
+
+const MESSAGE_STYLE = 'mt-12 text-xl leading-relaxed';
 
 export default function BlogList() {
-  const posts = POSTS;
+  // null until the answer arrives: "still loading" differs from "no posts"
+  const [posts, setPosts] = useState<Post[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  // The empty list runs the effect once, after the first render, not on every render
+  useEffect(() => {
+    async function loadPosts() {
+      try {
+        setPosts(await getPosts());
+      } catch (err) {
+        // getPosts and fetch both throw an Error
+        setError((err as Error).message);
+      }
+    }
+
+    loadPosts();
+  }, []);
 
   return (
     <div>
@@ -19,9 +38,9 @@ export default function BlogList() {
           Add new post
         </Button>
       </div>
-      {posts.length === 0 ? (
-        <p className="mt-12 text-xl leading-relaxed">No posts yet.</p>
-      ) : (
+      {posts === null && <p className={MESSAGE_STYLE}>{error ?? 'Loading…'}</p>}
+      {posts?.length === 0 && <p className={MESSAGE_STYLE}>No posts yet.</p>}
+      {posts !== null && posts.length > 0 && (
         <div className="mt-12 grid grid-cols-2 gap-8">
           {posts.map((post) => (
             <PostCard key={post.id} post={post} />

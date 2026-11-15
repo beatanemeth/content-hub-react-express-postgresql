@@ -1,4 +1,5 @@
-import { type Post, STAFF } from '../data/posts.ts';
+import type { Post } from '../api/posts.ts';
+import { STAFF } from '../data/lists.ts';
 import Button from './Button.tsx';
 
 interface PostCardProps {
