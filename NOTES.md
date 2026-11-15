@@ -18,7 +18,7 @@ The project teaches how an **Express** server is set up in **TypeScript** by bui
 - **Error screens:** the UI shows the API's error message as plain text. There are no error pages, toast messages or retry buttons.
 - **Pages beyond the blog:** About, Events, Contact and the footer links show the not-found page.
 - **Mobile layout:** the UI is designed for desktop screens only.
-- **Automated tests:** the endpoints are checked by hand with `blog.http`.
+- **Automated tests:** the endpoints are checked by hand with `backend/blog.http`.
 - **Deployment:** the app runs only on a local machine.
 
 <br>
@@ -392,3 +392,57 @@ npm run dev
 - **The same checks as on the laptop:** the job runs the npm scripts from `package.json`, so a local run and the CI run check the same rules.
 - **Later, one job per area:** when the code moves into `backend/` and `frontend/`, split the job so each one installs only its own lock file and a failure names the area.
 - **Separate files instead:** useful when the apps need different triggers, for example a backend workflow that runs only when `backend/` changes. Here every check runs on every change, so one file is enough.
+
+<br>
+
+## Move the backend into `backend/`
+
+**Goal:** prepare the repository for a React frontend. The backend becomes its own npm package in `backend/`; `frontend/` will be a second one.
+
+**Decision:** two independent npm packages, not npm workspaces. Each folder has its own `node_modules` and lock file, and its scripts run inside that folder. Workspaces would save one `npm install`, but they add hoisting, which this project does not need.
+
+| What                                                       | Where                   | Reason                                                                                                                         |
+| ---------------------------------------------------------- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `src/`, `tsconfig.json`, `eslint.config.js`, `blog.http`   | `backend/`              | They belong to the Express API only.                                                                                           |
+| Express, `pg`, ESLint, the `@types/*` packages, TypeScript | `backend/package.json`  | The backend and the frontend need different ESLint rules and globals.                                                          |
+| Prettier, its plugin, Husky, lint-staged, TypeScript       | the root `package.json` | Prettier's config and the Git hooks serve the whole repository; `prettier-plugin-organize-imports` needs TypeScript as a peer. |
+| `.env`, `docker-compose.yaml`, `db/`                       | the root                | Docker Compose reads `.env` next to `docker-compose.yaml`. The backend scripts read the same file with `--env-file=../.env`.   |
+
+1. **Move the files:** `git mv` keeps the history; `git log --follow backend/src/app.ts` shows the commits from before the move. The imports and `"include": ["src"]` are relative, so no file content changes.
+
+   ```bash
+   mkdir backend
+   git mv src tsconfig.json eslint.config.js blog.http backend/
+   ```
+
+2. **Split `package.json`:** copy the old lock file into `backend/` before the first install. `npm install` then removes the entries that `backend/package.json` does not list and keeps the exact versions.
+
+   ```bash
+   cp package-lock.json backend/package-lock.json
+   cd backend && npm install && cd ..
+   npm install
+   ```
+
+   `backend/package.json` takes the Node.js version from the root with `"volta": { "extends": "../package.json" }`.
+
+3. **lint-staged:** `backend/package.json` has its own `lint-staged` block. For each staged file, lint-staged uses the closest config and runs its tasks in that config's folder, so `eslint --fix` finds the ESLint in `backend/node_modules`. The configs are not merged, so the backend block lists Prettier as well.
+
+4. **CI:** [`ci.yml`](.github/workflows/ci.yml) now has two jobs. `format` runs Prettier from the root. `backend` runs ESLint and `tsc`; `defaults.run.working-directory: backend` starts every `run` step in `backend/`, and `cache-dependency-path: backend/package-lock.json` keys the npm cache on the backend lock file.
+
+### Check: the server runs from `backend/`
+
+```bash
+cd backend
+npm run dev
+curl localhost:8000/api/blog
+```
+
+**Expected result:** `200` and the same posts as before the move.
+
+### Check: the commit hook
+
+```bash
+npx lint-staged --diff=HEAD --verbose
+```
+
+**Expected result:** the files in `backend/` match the backend config (ESLint, then Prettier), the root files match the root config, and every task completes. `--diff=HEAD` checks the changed files without staging them.

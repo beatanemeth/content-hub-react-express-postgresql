@@ -18,6 +18,28 @@ Update this tree whenever a file or folder is added.
 
 ```text
 .
+├── backend/             # the Express API: its own npm package
+│   ├── src/
+│   │   ├── controllers/
+│   │   │   └── postController.ts  # the handlers of the /api/blog endpoints
+│   │   ├── data/
+│   │   │   └── posts.ts     # Post and PostInput interfaces: one post row, and the checked POST and PUT body
+│   │   ├── db/
+│   │   │   └── pool.ts      # the shared pg.Pool, built from DATABASE_URL
+│   │   ├── middleware/
+│   │   │   ├── checkPostId.ts    # 404 for a non-integer :id; passes the number on in res.locals.postId
+│   │   │   ├── checkPostInput.ts  # 400 for a POST or PUT body without the PostInput shape; passes it on in res.locals.postInput
+│   │   │   ├── errorHandlers.ts  # notFoundHandler (JSON 404) and errorHandler (JSON 400 and 500)
+│   │   │   └── requestLogger.ts  # logs the method and URL of every request
+│   │   ├── routes/
+│   │   │   └── postRoutes.ts  # postRouter: maps each /api/blog path and method to a handler
+│   │   ├── app.ts           # the Express app: routes, later middleware
+│   │   └── server.ts        # checks the database, then starts the app on port 8000
+│   ├── blog.http            # REST Client requests for the /api/blog endpoints
+│   ├── eslint.config.js     # ESLint rules for TypeScript and Node.js
+│   ├── package-lock.json
+│   ├── package.json         # scripts, dependencies, lint-staged tasks; reads ../.env
+│   └── tsconfig.json        # type check settings for Node.js type stripping
 ├── .claude/
 │   ├── rules/           # engineer, error handling, maintainer, ui, validation, writer rules
 │   ├── skills/          # /commit
@@ -34,39 +56,20 @@ Update this tree whenever a file or folder is added.
 │       └── manual_coding_guidelines.md  # Prettier, ESLint, Husky and lint-staged set-up
 ├── .github/
 │   └── workflows/
-│       └── ci.yml       # GitHub Actions: Prettier, ESLint and tsc on every pull request and push to main
+│       └── ci.yml       # GitHub Actions: a format job (Prettier) and a backend job (ESLint, tsc)
 ├── .husky/
 │   ├── pre-commit       # runs lint-staged
 │   └── prepare-commit-msg  # conventional merge messages
-├── src/
-│   ├── controllers/
-│   │   └── postController.ts  # the handlers of the /api/blog endpoints
-│   ├── data/
-│   │   └── posts.ts     # Post and PostInput interfaces: one post row, and the checked POST and PUT body
-│   ├── db/
-│   │   └── pool.ts      # the shared pg.Pool, built from DATABASE_URL
-│   ├── middleware/
-│   │   ├── checkPostId.ts    # 404 for a non-integer :id; passes the number on in res.locals.postId
-│   │   ├── checkPostInput.ts  # 400 for a POST or PUT body without the PostInput shape; passes it on in res.locals.postInput
-│   │   ├── errorHandlers.ts  # notFoundHandler (JSON 404) and errorHandler (JSON 400 and 500)
-│   │   └── requestLogger.ts  # logs the method and URL of every request
-│   ├── routes/
-│   │   └── postRoutes.ts  # postRouter: maps each /api/blog path and method to a handler
-│   ├── app.ts           # the Express app: routes, later middleware
-│   └── server.ts        # checks the database, then starts the app on port 8000
 ├── .env.example         # variable names; copy to .env, which is never committed
 ├── .gitignore
 ├── .prettierignore
 ├── .prettierrc.json     # Prettier options and plugins
-├── blog.http            # REST Client requests for the /api/blog endpoints
 ├── CLAUDE.md
 ├── docker-compose.yaml  # the PostgreSQL 18 container
-├── eslint.config.js     # ESLint rules for TypeScript and Node.js
 ├── NOTES.md             # build log: commands, files, checks, in build order
 ├── package-lock.json
-├── package.json         # scripts, dev dependencies, Volta pin
-├── README.md            # purpose, tool versions, local Git set-up
-└── tsconfig.json        # type check settings for Node.js type stripping
+├── package.json         # Prettier, Husky and lint-staged for the whole repository; the Volta pin
+└── README.md            # purpose, tool versions, local Git set-up
 ```
 
 - **`brainstorming/`:** the maintainer's local notes; listed in `.gitignore`, so never committed. Claude reads them but never edits them, except `brainstorming/claude/` (see `writer_docs.md`).

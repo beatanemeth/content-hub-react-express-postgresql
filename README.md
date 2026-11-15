@@ -24,12 +24,13 @@ The full build log, step by step, is in [NOTES.md](NOTES.md).
 
 ## Start the app
 
-Requirements: Node.js, npm and Docker with Docker Compose. Run each command in the repository root.
+Requirements: Node.js, npm and Docker with Docker Compose. Run each command in the repository root, except where a step says `backend/`.
 
-1. **Install the dependencies:**
+1. **Install the dependencies:** the root holds the formatting tools and the Git hooks; `backend/` holds the Express API.
 
    ```bash
    npm install
+   cd backend && npm install && cd ..
    ```
 
 2. **Create `.env`:** copy the example, then set a real user, password and database name. `DATABASE_URL` must use the same three values.
@@ -44,9 +45,10 @@ Requirements: Node.js, npm and Docker with Docker Compose. Run each command in t
    docker compose up -d
    ```
 
-4. **Start the server:**
+4. **Start the server (in `backend/`):** the scripts read `.env` from the root.
 
    ```bash
+   cd backend
    npm run dev
    ```
 
@@ -64,6 +66,6 @@ Requirements: Node.js, npm and Docker with Docker Compose. Run each command in t
 
 The planned evolution roadmap of the repo. Each version is built in phases: see the [backend roadmap](docs/claude/evolution_roadmap_backend.md) and the [frontend roadmap](docs/claude/evolution_roadmap_frontend.md).
 
-- v1: API endpoint development with in-memory storage, tested through the REST Client extension in VS Code (`blog.http`)
+- v1: API endpoint development with in-memory storage, tested through the REST Client extension in VS Code (`backend/blog.http`)
 - v2: PostgreSQL integration
 - v3: simple frontend with React
