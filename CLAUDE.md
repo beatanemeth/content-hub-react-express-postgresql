@@ -58,6 +58,8 @@ Update this tree whenever a file or folder is added.
 │   ├── public/
 │   │   └── favicon.svg      # the browser tab icon
 │   ├── src/
+│   │   ├── api/
+│   │   │   └── posts.ts         # interface Post and one fetch function per /api/blog endpoint
 │   │   ├── components/
 │   │   │   ├── Button.tsx       # a link or a button in the primary, secondary or tertiary style
 │   │   │   ├── Footer.tsx       # the copyright line and the legal links
@@ -65,7 +67,7 @@ Update this tree whenever a file or folder is added.
 │   │   │   ├── Layout.tsx       # the shared page frame; the matched page appears at <Outlet />
 │   │   │   └── PostCard.tsx     # one post in the list: title, meta line, summary and Read
 │   │   ├── data/
-│   │   │   └── posts.ts         # Post, Person, Category and Tag interfaces and the placeholder lists, until the API is wired up
+│   │   │   └── lists.ts         # the staff, category and tag lists, copied from db/seed; the API returns only their ids
 │   │   ├── pages/
 │   │   │   ├── BlogList.tsx     # the post list at /blog
 │   │   │   ├── Home.tsx         # the home page at /
