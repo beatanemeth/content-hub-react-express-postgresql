@@ -1,4 +1,5 @@
 import express from 'express';
+import { postRouter } from './routes/postRoutes.ts';
 
 /* The application object: holds the routes (and, later, the middleware); server.ts starts it. */
 export const app = express();
@@ -13,3 +14,9 @@ export const app = express();
 app.get('/', (_req, res) => {
   res.json({ message: 'Hello from Express' });
 });
+
+/*
+ * Sends every request under /api/blog, whatever its method, to postRouter.
+ * Express removes the prefix, so the router matches only the rest of the path ('/' or '/:id') and the method.
+ */
+app.use('/api/blog', postRouter);

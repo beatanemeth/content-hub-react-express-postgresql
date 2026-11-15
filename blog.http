@@ -1,0 +1,7 @@
+@baseUrl = http://localhost:8000/api/blog
+
+// ---------------------------------
+// Test: GET /api/blog
+// ---------------------------------
+### List all posts
+GET {{baseUrl}}
