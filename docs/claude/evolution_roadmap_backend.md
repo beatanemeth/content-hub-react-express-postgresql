@@ -61,6 +61,7 @@ postRouter.post('/', (req, res) => {
 
 - **Storage:** PostgreSQL database via `pg` pool connection.
 - **Key shift:** All route handlers become `async`, wrapping queries in `try/catch`.
+- **In-memory data removed:** once every handler uses SQL, the sample posts array and `nextPostId` are deleted; `src/data/posts.ts` keeps only the `Post` interface.
 
 ### Example code (`src/routes/postRoutes.ts`)
 
