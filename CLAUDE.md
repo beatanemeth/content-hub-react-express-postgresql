@@ -22,11 +22,13 @@ Update this tree whenever a file or folder is added.
 │   ├── rules/           # engineer, error handling, maintainer, ui, validation, writer rules
 │   ├── skills/          # /commit
 │   └── settings.json    # permissions
-├── .githooks/           # prepare-commit-msg: conventional merge messages
 ├── docs/
 │   ├── claude/          # additional files for Claude used in .claude/rules/
 │   │   └── assets/      # page mock-ups
 │   └── notes/           # set-up manuals linked from NOTES.md
+├── .husky/
+│   ├── pre-commit       # runs lint-staged
+│   └── prepare-commit-msg  # conventional merge messages
 ├── .gitignore
 ├── .prettierignore
 ├── .prettierrc.json     # Prettier options and plugins
