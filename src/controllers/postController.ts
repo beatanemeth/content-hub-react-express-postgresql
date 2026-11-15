@@ -76,7 +76,7 @@ export const getPostById: RequestHandler = async (_req, res) => {
  * @success 201, the new post
  * @errors 400 'Title, summary and body must be non-empty strings'
  * @errors 400 'author_id must be a number; category_ids and tag_ids must be lists of numbers'
- * @errors 400 'published_on must be a date in the form YYYY-MM-DD'
+ * @errors 400 'published_on must be a valid date in the form YYYY-MM-DD'
  * @errors 400 'Author, category or tag does not exist'
  * @errors 500 'Internal Server Error'
  * @access Public
@@ -151,7 +151,7 @@ export const createPost: RequestHandler = async (_req, res) => {
  * @success 200, the updated post
  * @errors 400 'Title, summary and body must be non-empty strings'
  * @errors 400 'author_id must be a number; category_ids and tag_ids must be lists of numbers'
- * @errors 400 'published_on must be a date in the form YYYY-MM-DD'
+ * @errors 400 'published_on must be a valid date in the form YYYY-MM-DD'
  * @errors 400 'Author, category or tag does not exist'
  * @errors 404 'Post not found'
  * @errors 500 'Internal Server Error'

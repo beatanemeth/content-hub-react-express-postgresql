@@ -1,8 +1,21 @@
 import type { RequestHandler } from 'express';
 import type { PostInput } from '../data/posts.ts';
 
-/* The text form of a PostgreSQL date column, for example '2026-11-14'. */
-const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+/*
+ * True for a real calendar date in YYYY-MM-DD, the text form of a PostgreSQL date column.
+ * JavaScript rolls 2026-02-30 over to 2026-03-02, so turning the Date back into text and comparing catches it.
+ */
+function isIsoDate(value: unknown): value is string {
+  if (typeof value !== 'string') {
+    return false;
+  }
+
+  const date = new Date(value);
+
+  return (
+    !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value
+  );
+}
 
 function isId(value: unknown): value is number {
   return Number.isInteger(value);
@@ -53,11 +66,11 @@ export const checkPostInput: RequestHandler = (req, res, next) => {
     return;
   }
 
-  /* Without this check, a missing or malformed date reaches PostgreSQL and fails there with a 500. */
-  if (typeof published_on !== 'string' || !DATE_PATTERN.test(published_on)) {
-    res
-      .status(400)
-      .json({ error: 'published_on must be a date in the form YYYY-MM-DD' });
+  /* Without this check, a missing or impossible date reaches PostgreSQL and fails there with a 500. */
+  if (!isIsoDate(published_on)) {
+    res.status(400).json({
+      error: 'published_on must be a valid date in the form YYYY-MM-DD',
+    });
     return;
   }
 
