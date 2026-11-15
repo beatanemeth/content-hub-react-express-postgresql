@@ -5,3 +5,16 @@
 // ---------------------------------
 ### List all posts
 GET {{baseUrl}}
+
+
+// ---------------------------------
+// Test: GET /api/blog/:id
+// ---------------------------------
+### Get one post
+GET {{baseUrl}}/1
+
+### Get a post that does not exist (404)
+GET {{baseUrl}}/999
+
+### Get a post with a non-numeric id (404)
+GET {{baseUrl}}/abc
