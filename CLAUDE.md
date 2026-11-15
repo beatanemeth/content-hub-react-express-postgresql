@@ -30,11 +30,16 @@ Update this tree whenever a file or folder is added.
 │   ├── pre-commit       # runs lint-staged
 │   └── prepare-commit-msg  # conventional merge messages
 ├── src/
+│   ├── data/
+│   │   └── posts.ts     # Post interface, in-memory sample posts, id counter
+│   ├── routes/
+│   │   └── postRoutes.ts  # postRouter: the /api/blog endpoints
 │   ├── app.ts           # the Express app: routes, later middleware
 │   └── server.ts        # starts the app on port 8000
 ├── .gitignore
 ├── .prettierignore
 ├── .prettierrc.json     # Prettier options and plugins
+├── blog.http            # REST Client requests for the /api/blog endpoints
 ├── CLAUDE.md
 ├── eslint.config.js     # ESLint rules for TypeScript and Node.js
 ├── NOTES.md             # build log: commands, files, checks, in build order
