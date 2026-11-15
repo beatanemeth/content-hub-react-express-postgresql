@@ -72,7 +72,7 @@ Update this tree whenever a file or folder is added.
 │   └── vite.config.ts       # Vite with the React and Tailwind CSS plugins
 ├── .github/
 │   └── workflows/
-│       └── ci.yml       # GitHub Actions: a format job (Prettier) and a backend job (ESLint, tsc)
+│       └── ci.yml       # GitHub Actions: format (Prettier), backend (ESLint, tsc) and frontend (ESLint, tsc, Vite build) jobs
 ├── .husky/
 │   ├── pre-commit       # runs lint-staged
 │   └── prepare-commit-msg  # conventional merge messages
