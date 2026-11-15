@@ -12,7 +12,7 @@ The project teaches how an **Express** server is set up in **TypeScript** by bui
 
 ## Out of scope
 
-- **Sign-in and sign-up:** there is none; every staff member may create, edit and delete posts.
+- **Sign-in and sign-up:** there is none; every staff member may create, edit and delete posts. The Author dropdown chooses who wrote the post; without sign-in, the API cannot check who sent the request.
 - **Protected routes:** no page or endpoint checks who is calling.
 - **Detailed input validation:** the browser checks only that each field is filled in (`required`), and the API checks only that `title`, `summary` and `body` are non-empty strings and that `author_id`, `category_ids` and `tag_ids` hold numbers (otherwise it answers `400`). A non-numeric post id is not validated; it matches no post and returns `404`. The database still enforces its own rules, such as unique labels and required columns.
 - **Error screens:** the UI shows the API's error message as plain text. There are no error pages, toast messages or retry buttons.
@@ -203,3 +203,19 @@ npm run typecheck
 ```
 
 Expected result: no output and no errors.
+
+<br>
+
+## Create API routes
+
+Blog post endpoints:
+
+| Method   | Path            | Purpose        | Called from                   |
+| -------- | --------------- | -------------- | ----------------------------- |
+| `GET`    | `/api/blog`     | List all posts | `/blog`                       |
+| `GET`    | `/api/blog/:id` | Read one post  | `/blog/:id`, `/blog/:id/edit` |
+| `POST`   | `/api/blog`     | Create a post  | Save on `/blog/new`           |
+| `PUT`    | `/api/blog/:id` | Replace a post | Save on `/blog/:id/edit`      |
+| `DELETE` | `/api/blog/:id` | Delete a post  | Delete on `/blog/:id`         |
+
+Tested through the REST Client extension in VS Code (`blog.http`).
