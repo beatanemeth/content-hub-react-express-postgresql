@@ -5,14 +5,22 @@
   "type": "module",
   "scripts": {
     "prettier": "prettier --check .",
-    "prettier:format": "prettier --write ."
+    "prettier:format": "prettier --write .",
+    "lint": "eslint .",
+    "lint:prettier-conflicts": "eslint-config-prettier src/server.ts"
   },
   "volta": {
     "node": "24.14.0"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.15.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-unused-imports": "^4.4.1",
+    "globals": "^17.14.0",
     "prettier": "3.10.1",
     "prettier-plugin-organize-imports": "4.3.0",
-    "typescript": "~6.0.3"
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.72.2"
   }
 }
