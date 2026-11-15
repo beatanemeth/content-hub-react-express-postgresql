@@ -1,5 +1,9 @@
 {
   "singleQuote": true,
-  "plugins": ["prettier-plugin-organize-imports"],
-  "organizeImportsSkipDestructiveCodeActions": true
+  "plugins": [
+    "prettier-plugin-organize-imports",
+    "prettier-plugin-tailwindcss"
+  ],
+  "organizeImportsSkipDestructiveCodeActions": true,
+  "tailwindStylesheet": "./frontend/src/globals.css"
 }

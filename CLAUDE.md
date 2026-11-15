@@ -54,9 +54,25 @@ Update this tree whenever a file or folder is added.
 │   └── notes/           # set-up manuals and decision notes linked from NOTES.md
 │       ├── info_db_setup.md  # database client, Docker and .env decisions
 │       └── manual_coding_guidelines.md  # Prettier, ESLint, Husky and lint-staged set-up
+├── frontend/            # the React app: its own npm package, created with Vite
+│   ├── public/
+│   │   └── favicon.svg      # the browser tab icon
+│   ├── src/
+│   │   ├── App.tsx          # the root component
+│   │   ├── globals.css      # Tailwind import, the @theme colours and fonts, the focus outline
+│   │   └── main.tsx         # mounts App into #root in index.html; imports globals.css
+│   ├── .gitignore           # node_modules/, dist/, logs and editor files
+│   ├── eslint.config.js     # ESLint rules for TypeScript and React
+│   ├── index.html           # the page Vite serves; loads the Google Fonts and src/main.tsx
+│   ├── package-lock.json
+│   ├── package.json         # scripts (dev, build, lint, preview), dependencies
+│   ├── tsconfig.app.json    # type check settings for the browser code in src/
+│   ├── tsconfig.json        # references tsconfig.app.json and tsconfig.node.json
+│   ├── tsconfig.node.json   # type check settings for vite.config.ts
+│   └── vite.config.ts       # Vite with the React and Tailwind CSS plugins
 ├── .github/
 │   └── workflows/
-│       └── ci.yml       # GitHub Actions: a format job (Prettier) and a backend job (ESLint, tsc)
+│       └── ci.yml       # GitHub Actions: format (Prettier), backend (ESLint, tsc) and frontend (ESLint, tsc, Vite build) jobs
 ├── .husky/
 │   ├── pre-commit       # runs lint-staged
 │   └── prepare-commit-msg  # conventional merge messages
