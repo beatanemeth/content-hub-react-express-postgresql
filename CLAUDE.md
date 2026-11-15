@@ -58,7 +58,17 @@ Update this tree whenever a file or folder is added.
 │   ├── public/
 │   │   └── favicon.svg      # the browser tab icon
 │   ├── src/
-│   │   ├── App.tsx          # the root component
+│   │   ├── components/
+│   │   │   ├── Footer.tsx       # the copyright line and the legal links
+│   │   │   ├── Header.tsx       # the logo (to Home) and the main navigation
+│   │   │   └── Layout.tsx       # the shared page frame; the matched page appears at <Outlet />
+│   │   ├── pages/
+│   │   │   ├── BlogList.tsx     # the post list at /blog
+│   │   │   ├── Home.tsx         # the home page at /
+│   │   │   ├── NotFound.tsx     # the not-found page for any unknown URL
+│   │   │   ├── Post.tsx         # one post at /blog/:id
+│   │   │   └── PostForm.tsx     # the new and edit form at /blog/new and /blog/:id/edit
+│   │   ├── App.tsx          # the root component: the route table
 │   │   ├── globals.css      # Tailwind import, the @theme colours and fonts, the focus outline
 │   │   └── main.tsx         # mounts App into #root in index.html; imports globals.css
 │   ├── .gitignore           # node_modules/, dist/, logs and editor files
