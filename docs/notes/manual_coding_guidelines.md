@@ -8,7 +8,7 @@ Part of [NOTES.md](../../NOTES.md).
 
 The project uses **ESLint**, **Prettier**, **Husky** and **lint-staged** to keep the code consistent. Every commit is linted and formatted automatically.
 
-All tools live in the root `package.json`, next to Express. The Express code lives in `src/`.
+This manual sets the tools up in the root `package.json`, next to Express, in the first layout. Since the [move to `backend/`](../../NOTES.md#move-the-backend-into-backend), ESLint, `eslint.config.js`, the `lint` scripts and the ESLint lint-staged task live in `backend/`; Prettier, Husky and lint-staged stay in the root.
 
 <br>
 
@@ -233,7 +233,7 @@ The `npx lint-staged` command **runs** the lint-staged tasks **when committing**
 
 ## Verify the setup
 
-Run every check in the root. Check 2 lints TypeScript only when `src/` holds a `.ts` file; before that, it lints only `eslint.config.js`.
+Run checks 1 and 4 in the root, and checks 2 and 3 in `backend/`. Check 2 lints TypeScript only when `src/` holds a `.ts` file; before that, it lints only `eslint.config.js`.
 
 1. **Prettier:** checks the formatting and the `organize-imports` plugin.
 
