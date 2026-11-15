@@ -38,11 +38,14 @@ Update this tree whenever a file or folder is added.
 │   ├── controllers/
 │   │   └── postController.ts  # the handlers of the /api/blog endpoints
 │   ├── data/
-│   │   └── posts.ts     # Post interface: the shape of one post row
+│   │   └── posts.ts     # Post and PostInput interfaces: one post row, and the checked POST and PUT body
 │   ├── db/
 │   │   └── pool.ts      # the shared pg.Pool, built from DATABASE_URL
 │   ├── middleware/
-│   │   └── errorHandlers.ts  # notFoundHandler (JSON 404) and errorHandler (JSON 400 and 500)
+│   │   ├── checkPostId.ts    # 404 for a non-integer :id; passes the number on in res.locals.postId
+│   │   ├── checkPostInput.ts  # 400 for a POST or PUT body without the PostInput shape; passes it on in res.locals.postInput
+│   │   ├── errorHandlers.ts  # notFoundHandler (JSON 404) and errorHandler (JSON 400 and 500)
+│   │   └── requestLogger.ts  # logs the method and URL of every request
 │   ├── routes/
 │   │   └── postRoutes.ts  # postRouter: maps each /api/blog path and method to a handler
 │   ├── app.ts           # the Express app: routes, later middleware

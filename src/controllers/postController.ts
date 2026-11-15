@@ -1,13 +1,10 @@
 import type { RequestHandler } from 'express';
 import pg from 'pg';
-import { type Post } from '../data/posts.ts';
+import { type Post, type PostInput } from '../data/posts.ts';
 import { pool } from '../db/pool.ts';
 
 /* An average adult reading speed for plain text. */
 const WORDS_PER_MINUTE = 200;
-
-/* The text form of a PostgreSQL date column, for example '2026-11-14'. */
-const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 
 /*
  * The columns of one post, shared by the handlers that return posts; each adds its own WHERE or ORDER BY.
@@ -35,52 +32,6 @@ function withMinutesToRead(post: Post): PostResponse {
   };
 }
 
-function isIdList(value: unknown): value is number[] {
-  return Array.isArray(value) && value.every((item) => Number.isInteger(item));
-}
-
-/* POST and PUT take the same body, so they share one check. Returns the error message, or null when the body is valid. */
-function findPostBodyError(
-  requestBody: Record<string, unknown> | undefined,
-): string | null {
-  /* req.body is undefined when the request has no JSON body; ?? {} keeps the destructuring safe. */
-  const {
-    title,
-    summary,
-    body,
-    author_id,
-    published_on,
-    category_ids,
-    tag_ids,
-  } = requestBody ?? {};
-
-  if (
-    typeof title !== 'string' ||
-    title.trim() === '' ||
-    typeof summary !== 'string' ||
-    summary.trim() === '' ||
-    typeof body !== 'string' ||
-    body.trim() === ''
-  ) {
-    return 'Title, summary and body must be non-empty strings';
-  }
-
-  if (
-    !Number.isInteger(author_id) ||
-    !isIdList(category_ids) ||
-    !isIdList(tag_ids)
-  ) {
-    return 'author_id must be a number; category_ids and tag_ids must be lists of numbers';
-  }
-
-  /* Without this check, a missing or malformed date reaches PostgreSQL and fails there with a 500. */
-  if (typeof published_on !== 'string' || !DATE_PATTERN.test(published_on)) {
-    return 'published_on must be a date in the form YYYY-MM-DD';
-  }
-
-  return null;
-}
-
 /**
  * @desc List all posts
  * @route GET /api/blog
@@ -103,14 +54,9 @@ export const getAllPosts: RequestHandler = async (_req, res) => {
  * @errors 500 'Internal Server Error'
  * @access Public
  */
-export const getPostById: RequestHandler = async (req, res) => {
-  /* Path parameters are always strings. PostgreSQL rejects NaN or 1.5 for an integer column, so answer 404 before the query. */
-  const id = Number(req.params.id);
-
-  if (!Number.isInteger(id)) {
-    res.status(404).json({ error: 'Post not found' });
-    return;
-  }
+export const getPostById: RequestHandler = async (_req, res) => {
+  /* checkPostId has already checked the id; res.locals values are typed any, so the annotation restores number. */
+  const id: number = res.locals.postId;
 
   /* $1 is a placeholder: pg sends id separately from the SQL text, so the value can never change the query. */
   const result = await pool.query<Post>(`${SELECT_POST} WHERE p.id = $1`, [id]);
@@ -130,19 +76,13 @@ export const getPostById: RequestHandler = async (req, res) => {
  * @success 201, the new post
  * @errors 400 'Title, summary and body must be non-empty strings'
  * @errors 400 'author_id must be a number; category_ids and tag_ids must be lists of numbers'
- * @errors 400 'published_on must be a date in the form YYYY-MM-DD'
+ * @errors 400 'published_on must be a valid date in the form YYYY-MM-DD'
  * @errors 400 'Author, category or tag does not exist'
  * @errors 500 'Internal Server Error'
  * @access Public
  */
-export const createPost: RequestHandler = async (req, res) => {
-  const error = findPostBodyError(req.body);
-
-  if (error) {
-    res.status(400).json({ error });
-    return;
-  }
-
+export const createPost: RequestHandler = async (_req, res) => {
+  /* checkPostInput has already checked and trimmed the body; the annotation restores the type that res.locals loses. */
   const {
     title,
     summary,
@@ -151,7 +91,7 @@ export const createPost: RequestHandler = async (req, res) => {
     published_on,
     category_ids,
     tag_ids,
-  } = req.body;
+  }: PostInput = res.locals.postInput;
 
   /* BEGIN and COMMIT must run on the same connection; pool.query() may pick a different one for each call. */
   const client = await pool.connect();
@@ -164,7 +104,7 @@ export const createPost: RequestHandler = async (req, res) => {
       `INSERT INTO post (title, summary, body, author_id, published_on, updated_at)
        VALUES ($1, $2, $3, $4, $5, now())
        RETURNING id`,
-      [title.trim(), summary.trim(), body.trim(), author_id, published_on],
+      [title, summary, body, author_id, published_on],
     );
     const postId = inserted.rows[0].id;
 
@@ -211,27 +151,14 @@ export const createPost: RequestHandler = async (req, res) => {
  * @success 200, the updated post
  * @errors 400 'Title, summary and body must be non-empty strings'
  * @errors 400 'author_id must be a number; category_ids and tag_ids must be lists of numbers'
- * @errors 400 'published_on must be a date in the form YYYY-MM-DD'
+ * @errors 400 'published_on must be a valid date in the form YYYY-MM-DD'
  * @errors 400 'Author, category or tag does not exist'
  * @errors 404 'Post not found'
  * @errors 500 'Internal Server Error'
  * @access Public
  */
-export const updatePost: RequestHandler = async (req, res) => {
-  const error = findPostBodyError(req.body);
-
-  if (error) {
-    res.status(400).json({ error });
-    return;
-  }
-
-  const id = Number(req.params.id);
-
-  if (!Number.isInteger(id)) {
-    res.status(404).json({ error: 'Post not found' });
-    return;
-  }
-
+export const updatePost: RequestHandler = async (_req, res) => {
+  const id: number = res.locals.postId;
   const {
     title,
     summary,
@@ -240,7 +167,7 @@ export const updatePost: RequestHandler = async (req, res) => {
     published_on,
     category_ids,
     tag_ids,
-  } = req.body;
+  }: PostInput = res.locals.postInput;
 
   const client = await pool.connect();
 
@@ -252,7 +179,7 @@ export const updatePost: RequestHandler = async (req, res) => {
       `UPDATE post
        SET title = $1, summary = $2, body = $3, author_id = $4, published_on = $5, updated_at = now()
        WHERE id = $6`,
-      [title.trim(), summary.trim(), body.trim(), author_id, published_on, id],
+      [title, summary, body, author_id, published_on, id],
     );
 
     /* rowCount is the number of rows the UPDATE changed: 0 means no post has this id. */
@@ -307,13 +234,8 @@ export const updatePost: RequestHandler = async (req, res) => {
  * @errors 500 'Internal Server Error'
  * @access Public
  */
-export const deletePost: RequestHandler = async (req, res) => {
-  const id = Number(req.params.id);
-
-  if (!Number.isInteger(id)) {
-    res.status(404).json({ error: 'Post not found' });
-    return;
-  }
+export const deletePost: RequestHandler = async (_req, res) => {
+  const id: number = res.locals.postId;
 
   /* One statement, so no transaction: ON DELETE CASCADE in the schema removes the link rows too. */
   const result = await pool.query('DELETE FROM post WHERE id = $1', [id]);

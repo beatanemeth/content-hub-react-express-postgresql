@@ -1,9 +1,13 @@
 import express from 'express';
 import { errorHandler, notFoundHandler } from './middleware/errorHandlers.ts';
+import { requestLogger } from './middleware/requestLogger.ts';
 import { postRouter } from './routes/postRoutes.ts';
 
 /* The application object: holds the routes (and, later, the middleware); server.ts starts it. */
 export const app = express();
+
+/* First, so every request is logged, including those that express.json() rejects as broken JSON. */
+app.use(requestLogger);
 
 /* Middleware runs in registration order, so the body is parsed before any route reads req.body. */
 app.use(express.json());
