@@ -116,7 +116,7 @@ postRouter.get('/', getPosts);
 
 **Goal:** Eliminate repetitive `res.status(500).json(...)` blocks in every controller by leveraging Express's error-forwarding pipeline (`next(err)`).
 
-1. **Error middleware (`src/middleware/errorMiddleware.ts`):**
+1. **Error handlers (`src/middleware/errorHandlers.ts`):**
 
 ```typescript
 import { Request, Response, NextFunction } from 'express';
