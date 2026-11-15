@@ -4,6 +4,9 @@ import { postRouter } from './routes/postRoutes.ts';
 /* The application object: holds the routes (and, later, the middleware); server.ts starts it. */
 export const app = express();
 
+/* Middleware runs in registration order, so the body is parsed before any route reads req.body. */
+app.use(express.json());
+
 /**
  * @desc Answer with a greeting, to check that the server runs
  * @route GET /

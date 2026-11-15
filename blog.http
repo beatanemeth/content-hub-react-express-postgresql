@@ -18,3 +18,49 @@ GET {{baseUrl}}/999
 
 ### Get a post with a non-numeric id (404)
 GET {{baseUrl}}/abc
+
+
+// ---------------------------------
+// Test: POST /api/blog
+// ---------------------------------
+### Create a post
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "title": "My Coffee Journey",
+  "summary": "Exploring unique brews",
+  "body": "Content here...",
+  "author_id": 1,
+  "published_on": "2026-11-14",
+  "category_ids": [1, 2],
+  "tag_ids": [1]
+}
+
+### Create a post with an empty title (400)
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "title": "  ",
+  "summary": "Exploring unique brews",
+  "body": "Content here...",
+  "author_id": 1,
+  "published_on": "2026-11-14",
+  "category_ids": [1, 2],
+  "tag_ids": [1]
+}
+
+### Create a post with a text author_id (400)
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "title": "My Coffee Journey",
+  "summary": "Exploring unique brews",
+  "body": "Content here...",
+  "author_id": "1",
+  "published_on": "2026-11-14",
+  "category_ids": [1, 2],
+  "tag_ids": [1]
+}
