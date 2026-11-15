@@ -1,5 +1,6 @@
 import express from 'express';
 import { nextPostId, posts, type Post } from '../data/posts.ts';
+import { pool } from '../db/pool.ts';
 
 /* An average adult reading speed for plain text. */
 const WORDS_PER_MINUTE = 200;
@@ -60,11 +61,26 @@ function findPostBodyError(
  * @desc List all posts
  * @route GET /api/blog
  * @success 200, an array of posts ([] when there are none)
- * @errors None
+ * @errors 500 'Internal Server Error'
  * @access Public
  */
-postRouter.get('/', (_req, res) => {
-  res.json(posts.map(withMinutesToRead));
+postRouter.get('/', async (_req, res) => {
+  try {
+    /* ARRAY(subquery) collects a post's link rows into one list, and gives {} (not NULL) when there are none. */
+    const result = await pool.query<Post>(`
+      SELECT p.id, p.title, p.summary, p.body, p.author_id, p.published_on, p.updated_at,
+        ARRAY(SELECT category_id FROM post_category WHERE post_id = p.id ORDER BY category_id) AS category_ids,
+        ARRAY(SELECT tag_id FROM post_tag WHERE post_id = p.id ORDER BY tag_id) AS tag_ids
+      FROM post AS p
+      ORDER BY p.id
+    `);
+
+    res.json(result.rows.map(withMinutesToRead));
+  } catch (error) {
+    /* The details stay in the server log; the client gets only the generic message. */
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 });
 
 /**
