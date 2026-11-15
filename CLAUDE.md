@@ -29,6 +29,9 @@ Update this tree whenever a file or folder is added.
 ├── .husky/
 │   ├── pre-commit       # runs lint-staged
 │   └── prepare-commit-msg  # conventional merge messages
+├── src/
+│   ├── app.ts           # the Express app: routes, later middleware
+│   └── server.ts        # starts the app on port 8000
 ├── .gitignore
 ├── .prettierignore
 ├── .prettierrc.json     # Prettier options and plugins
@@ -37,7 +40,8 @@ Update this tree whenever a file or folder is added.
 ├── NOTES.md             # build log: commands, files, checks, in build order
 ├── package-lock.json
 ├── package.json         # scripts, dev dependencies, Volta pin
-└── README.md            # purpose, tool versions, local Git set-up
+├── README.md            # purpose, tool versions, local Git set-up
+└── tsconfig.json        # type check settings for Node.js type stripping
 ```
 
 - **`brainstorming/`:** the maintainer's local notes; listed in `.gitignore`, so never committed. Claude reads them but never edits them, except `brainstorming/claude/` (see `writer_docs.md`).
