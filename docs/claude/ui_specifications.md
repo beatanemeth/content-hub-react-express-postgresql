@@ -20,11 +20,11 @@ Part of the [brand style guide](./brand_style_guide.md). Colours, fonts and logo
 
 | Page                | URL              | Mock-up                                                                     |
 | ------------------- | ---------------- | --------------------------------------------------------------------------- |
-| **Home**            | `/`              | [01-home.png](./assets/01-home.png)                                         |
-| **Blog: post list** | `/blog`          | [02-blog-posts-listing-page.png](./assets/02-blog-posts-listing-page.png)   |
-| **Blog: one post**  | `/blog/:id`      | [03-blog-single-post-page.png](./assets/03-blog-single-post-page.png)       |
-| **Blog: new post**  | `/blog/new`      | [04-blog-create-or-edit-post.png](./assets/04-blog-create-or-edit-post.png) |
-| **Blog: edit post** | `/blog/:id/edit` | [04-blog-create-or-edit-post.png](./assets/04-blog-create-or-edit-post.png) |
+| **Home**            | `/`              | [01_home.png](./assets/01_home.png)                                         |
+| **Blog: post list** | `/blog`          | [02_blog_posts_listing_page.png](./assets/02_blog_posts_listing_page.png)   |
+| **Blog: one post**  | `/blog/:id`      | [03_blog_single_post_page.png](./assets/03_blog_single_post_page.png)       |
+| **Blog: new post**  | `/blog/new`      | [04_blog_create_or_edit_post.png](./assets/04_blog_create_or_edit_post.png) |
+| **Blog: edit post** | `/blog/:id/edit` | [04_blog_create_or_edit_post.png](./assets/04_blog_create_or_edit_post.png) |
 | **Not found**       | any other URL    | none; uses the shared page layout                                           |
 
 <br>
@@ -89,7 +89,7 @@ Part of the [brand style guide](./brand_style_guide.md). Colours, fonts and logo
 | **Summary**      | `<textarea>`, 3 rows  |
 | **Body text**    | `<textarea>`, 12 rows |
 
-- **Form heading:** "New post" on `/blog/new`, "Edit post" on `/blog/:id/edit`. Labels as in [04-blog-create-or-edit-post.png](./assets/04-blog-create-or-edit-post.png).
+- **Form heading:** "New post" on `/blog/new`, "Edit post" on `/blog/:id/edit`. Labels as in [04_blog_create_or_edit_post.png](./assets/04_blog_create_or_edit_post.png).
 - **Author:** the `<select>` lists the staff names. Its first option, "Choose an author", has an empty value, so `required` blocks the form until an author is chosen. Only the staff may create posts.
 - **Categories and tags are lists:** a post has one or more categories and one or more tags, sent as id arrays (`category_ids`, `tag_ids`), as in the `post_category` and `post_tag` tables. In the form, each is a group of checkboxes in three columns, and at least one box per group must be ticked.
 - **Request body:** carries the ids of the ticked boxes, so the API needs no label-to-id lookup.
@@ -187,7 +187,7 @@ Tailwind spacing classes; one value per gap, so the pages share one rhythm.
 
 ### Home
 
-Heading (`h1`): **Bloom & Burr Coffee Co.** Then four paragraphs, centred, as in [01-home.png](./assets/01-home.png):
+Heading (`h1`): **Bloom & Burr Coffee Co.** Then four paragraphs, centred, as in [01_home.png](./assets/01_home.png):
 
 > We are an independent speciality roastery, café and brewing school. We roast and serve speciality coffee, and we teach people to brew it at home, without jargon and without price barriers.
 >
@@ -206,7 +206,7 @@ Heading (`h1`): **Blog**. Then one paragraph:
 
 > Stories from the roastery, the café and our events: brewing tips, event reports and guest posts from our community.
 
-- **Post card and single post:** the parts and their order as in [02-blog-posts-listing-page.png](./assets/02-blog-posts-listing-page.png) and [03-blog-single-post-page.png](./assets/03-blog-single-post-page.png).
+- **Post card and single post:** the parts and their order as in [02_blog_posts_listing_page.png](./assets/02_blog_posts_listing_page.png) and [03_blog_single_post_page.png](./assets/03_blog_single_post_page.png).
 - **Meta line:** `<date> • <author>` on a post card; `<date> • <author> • <n> min read` on the single post.
 - **Separators:** " • " in the meta line and between categories; tags are joined with ", ".
 - **Dates:** shown as the API sends them (`YYYY-MM-DD`).

@@ -2,7 +2,7 @@
 
 The API has one resource: blog posts, under `/api/blog`. The backend runs at `http://localhost:8000`; the frontend runs at `http://localhost:5173` (Vite's default port). The frontend calls relative paths such as `/api/blog`, and the Vite dev server proxies them to the backend. The browser sees one origin, so the API needs no CORS. There is no sign-in; every staff member may create, edit and delete posts (see [NOTES.md](../../NOTES.md)).
 
-**Storage:** the contract below is the same in every phase of the [backend roadmap](./evolution_roadmap_backend.md). The first phase keeps sample posts in an array in a module under `backend/src/data/`, which resets on every server restart. A later phase stores them in PostgreSQL.
+**Storage:** the contract below is the same in every phase of the [backend roadmap](./evolution_roadmap_backend.md). The first phase keeps sample posts in an array in a module under `backend/src/data/`, which resets on every server restart. Phase 2 stores them in PostgreSQL and removes the array.
 
 <br>
 

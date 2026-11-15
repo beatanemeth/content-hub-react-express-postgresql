@@ -26,6 +26,7 @@ Update this tree whenever a file or folder is added.
 │   ├── init/            # 01-schema.sql, 02-seed.sql: run by the container when the volume is empty
 │   └── seed/            # CSV files loaded with COPY; the source of truth for the data
 ├── docs/
+│   ├── assets/          # db-schema.drawio and db-schema.png: the database schema diagram
 │   ├── claude/          # additional files for Claude used in .claude/rules/
 │   │   └── assets/      # page mock-ups
 │   └── notes/           # set-up manuals and decision notes linked from NOTES.md
