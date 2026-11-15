@@ -19,8 +19,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # One package in the root for now; split into backend and frontend jobs when those folders exist
-  checks:
+  # Prettier's config lives in the root, so one check covers the whole repository
+  format:
     runs-on: ubuntu-latest
 
     steps:
@@ -37,6 +37,27 @@ jobs:
 
       - name: Check formatting (Prettier)
         run: npm run prettier
+
+  backend:
+    runs-on: ubuntu-latest
+
+    # Every run step below starts in backend/
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - uses: actions/checkout@v7
+
+      # The root package.json holds the Node.js pin; the cache key comes from the backend lockfile
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: package.json
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
 
       - name: Check code quality (ESLint)
         run: npm run lint
