@@ -35,7 +35,7 @@ Update this tree whenever a file or folder is added.
 │   └── prepare-commit-msg  # conventional merge messages
 ├── src/
 │   ├── data/
-│   │   └── posts.ts     # Post interface, in-memory sample posts, id counter
+│   │   └── posts.ts     # Post interface: the shape of one post row
 │   ├── db/
 │   │   └── pool.ts      # the shared pg.Pool, built from DATABASE_URL
 │   ├── routes/
