@@ -25,6 +25,26 @@ export interface Post {
   minutes_to_read: number;
 }
 
+/* The body of POST and PUT: the post fields the user enters; the server sets the rest. */
+export interface PostInput {
+  title: string;
+  summary: string;
+  body: string;
+  author_id: number;
+  published_on: string;
+  category_ids: number[];
+  tag_ids: number[];
+}
+
+// Both POST and PUT send the post fields as JSON
+function jsonOptions(method: string, input: PostInput): RequestInit {
+  return {
+    method,
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(input),
+  };
+}
+
 // Sends the request; turns "no answer" into one clear message
 async function request(url: string, options?: RequestInit): Promise<Response> {
   let response: Response;
@@ -74,4 +94,37 @@ export async function getPost(id: number): Promise<Post | null> {
   }
 
   return response.json();
+}
+
+// The API answers 201 Created with the new post, which carries its new id
+export async function createPost(input: PostInput): Promise<Post> {
+  const response = await request(BASE_URL, jsonOptions('POST', input));
+
+  if (!response.ok) {
+    throw await readError(response);
+  }
+
+  return response.json();
+}
+
+export async function updatePost(id: number, input: PostInput): Promise<Post> {
+  const response = await request(
+    `${BASE_URL}/${id}`,
+    jsonOptions('PUT', input),
+  );
+
+  if (!response.ok) {
+    throw await readError(response);
+  }
+
+  return response.json();
+}
+
+// The API answers 204 No Content, so there is nothing to return
+export async function deletePost(id: number): Promise<void> {
+  const response = await request(`${BASE_URL}/${id}`, { method: 'DELETE' });
+
+  if (!response.ok) {
+    throw await readError(response);
+  }
 }

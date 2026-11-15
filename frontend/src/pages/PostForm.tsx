@@ -1,6 +1,12 @@
 import { type SubmitEvent, useEffect, useState } from 'react';
-import { useParams } from 'react-router';
-import { getPost, type Post } from '../api/posts.ts';
+import { useNavigate, useParams } from 'react-router';
+import {
+  createPost,
+  getPost,
+  type Post,
+  type PostInput,
+  updatePost,
+} from '../api/posts.ts';
 import Button from '../components/Button.tsx';
 import {
   CATEGORIES,
@@ -82,6 +88,9 @@ export default function PostForm() {
   const [post, setPost] = useState<Post | null>(null);
   const [isNotFound, setIsNotFound] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Separate from error: a failed save keeps the form and the typed values on screen
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // A new post starts empty, so there is nothing to load
@@ -115,9 +124,33 @@ export default function PostForm() {
     return <p className="text-xl leading-relaxed">{error ?? 'Loading…'}</p>;
   }
 
-  // Saving arrives with the API; until then, stop the browser from reloading the page
-  const handleSubmit = (event: SubmitEvent<HTMLFormElement>) => {
+  // onSubmit runs only after the browser has checked every required field
+  const handleSubmit = async (event: SubmitEvent<HTMLFormElement>) => {
+    // Stop the browser from sending the form itself and loading a new page
     event.preventDefault();
+    setSaveError(null);
+
+    // The inputs are uncontrolled, so FormData reads each value by its name attribute
+    const formData = new FormData(event.currentTarget);
+    const input: PostInput = {
+      title: String(formData.get('title')),
+      summary: String(formData.get('summary')),
+      body: String(formData.get('body')),
+      author_id: Number(formData.get('author_id')),
+      published_on: String(formData.get('published_on')),
+      // getAll gives the values of all ticked boxes with this name, as strings
+      category_ids: formData.getAll('category_ids').map(Number),
+      tag_ids: formData.getAll('tag_ids').map(Number),
+    };
+
+    try {
+      const savedPost = isEditing
+        ? await updatePost(Number(id), input)
+        : await createPost(input);
+      navigate(`/blog/${savedPost.id}`);
+    } catch (err) {
+      setSaveError((err as Error).message);
+    }
   };
 
   return (
@@ -218,6 +251,7 @@ export default function PostForm() {
             className={INPUT_STYLE}
           />
         </label>
+        {saveError !== null && <p>{saveError}</p>}
         <div className="flex gap-4">
           <Button type="submit">Save</Button>
           <Button variant="tertiary" to={isEditing ? `/blog/${id}` : '/blog'}>
