@@ -42,6 +42,7 @@ Update this tree whenever a file or folder is added.
 │   ├── db/
 │   │   └── pool.ts      # the shared pg.Pool, built from DATABASE_URL
 │   ├── middleware/
+│   │   ├── checkPostId.ts    # 404 for a non-integer :id; passes the number on in res.locals.postId
 │   │   ├── errorHandlers.ts  # notFoundHandler (JSON 404) and errorHandler (JSON 400 and 500)
 │   │   └── requestLogger.ts  # logs the method and URL of every request
 │   ├── routes/
