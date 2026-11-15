@@ -1,8 +1,26 @@
 import express from 'express';
 import { nextPostId, posts, type Post } from '../data/posts.ts';
 
+/* An average adult reading speed for plain text. */
+const WORDS_PER_MINUTE = 200;
+
 /* Paths here are relative to where app.ts mounts the router (/api/blog). */
 export const postRouter = express.Router();
+
+/* The shape every response sends: the stored post plus a value calculated on each request. */
+interface PostResponse extends Post {
+  minutes_to_read: number;
+}
+
+/* Not stored: calculating it from body keeps it correct after every PUT. */
+function withMinutesToRead(post: Post): PostResponse {
+  const wordCount = post.body.split(/\s+/).length;
+
+  return {
+    ...post,
+    minutes_to_read: Math.max(1, Math.ceil(wordCount / WORDS_PER_MINUTE)),
+  };
+}
 
 function isIdList(value: unknown): value is number[] {
   return Array.isArray(value) && value.every((item) => Number.isInteger(item));
@@ -46,7 +64,7 @@ function findPostBodyError(
  * @access Public
  */
 postRouter.get('/', (_req, res) => {
-  res.json(posts);
+  res.json(posts.map(withMinutesToRead));
 });
 
 /**
@@ -66,7 +84,7 @@ postRouter.get('/:id', (req, res) => {
     return;
   }
 
-  res.json(post);
+  res.json(withMinutesToRead(post));
 });
 
 /**
@@ -108,7 +126,7 @@ postRouter.post('/', (req, res) => {
   };
   posts.push(post);
 
-  res.status(201).json(post);
+  res.status(201).json(withMinutesToRead(post));
 });
 
 /**
@@ -161,7 +179,7 @@ postRouter.put('/:id', (req, res) => {
   };
   posts[index] = post;
 
-  res.json(post);
+  res.json(withMinutesToRead(post));
 });
 
 /**
