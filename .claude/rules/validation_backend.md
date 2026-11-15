@@ -19,16 +19,16 @@ paths:
 const { title, summary, body } = req.body ?? {};
 
 if (
-	typeof title !== 'string' ||
-	title.trim() === '' ||
-	typeof summary !== 'string' ||
-	summary.trim() === '' ||
-	typeof body !== 'string' ||
-	body.trim() === ''
+  typeof title !== 'string' ||
+  title.trim() === '' ||
+  typeof summary !== 'string' ||
+  summary.trim() === '' ||
+  typeof body !== 'string' ||
+  body.trim() === ''
 ) {
-	res
-		.status(400)
-		.json({ error: 'Title, summary and body must be non-empty strings' });
-	return;
+  res
+    .status(400)
+    .json({ error: 'Title, summary and body must be non-empty strings' });
+  return;
 }
 ```

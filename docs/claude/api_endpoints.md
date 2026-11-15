@@ -22,13 +22,13 @@ The API has one resource: blog posts, under `/api/blog`. The backend runs at `ht
 
 It's the agreement between the server and its clients. It says: "If you send this request, you get this response." Error bodies and messages are in [error_handling_backend.md](../../.claude/rules/error_handling_backend.md). The request body of `POST` and `PUT` and the handler code are in [create_post_example.md](./create_post_example.md).
 
-| Action   | Method and path        | Input                                           | Output                   | Success | Failure      |
-| -------- | ---------------------- | ----------------------------------------------- | ------------------------ | ------- | ------------ |
-| List     | `GET /api/blog`        | None                                            | An array of posts        | `200`   | None         |
-| Read one | `GET /api/blog/:id`    | `req.params.id`                                 | One post                 | `200`   | `404`        |
-| Create   | `POST /api/blog`       | `req.body`: the post fields                     | The new post with its id | `201`   | `400`        |
-| Update   | `PUT /api/blog/:id`    | `req.params.id`; `req.body`: the post fields    | The updated post         | `200`   | `400`, `404` |
-| Delete   | `DELETE /api/blog/:id` | `req.params.id`                                 | No body                  | `204`   | `404`        |
+| Action   | Method and path        | Input                                        | Output                   | Success | Failure      |
+| -------- | ---------------------- | -------------------------------------------- | ------------------------ | ------- | ------------ |
+| List     | `GET /api/blog`        | None                                         | An array of posts        | `200`   | None         |
+| Read one | `GET /api/blog/:id`    | `req.params.id`                              | One post                 | `200`   | `404`        |
+| Create   | `POST /api/blog`       | `req.body`: the post fields                  | The new post with its id | `201`   | `400`        |
+| Update   | `PUT /api/blog/:id`    | `req.params.id`; `req.body`: the post fields | The updated post         | `200`   | `400`, `404` |
+| Delete   | `DELETE /api/blog/:id` | `req.params.id`                              | No body                  | `204`   | `404`        |
 
 - **Post fields:** `title`, `summary`, `body`, `author_id`, `published_on`, `category_ids` and `tag_ids`. They match the `post` table in [mock_schema.sql](./mock_schema.sql); the two id lists come from the link tables `post_category` and `post_tag`. The server sets `id` and `updated_at`.
 - **Minutes to read:** every response that returns a post also carries `minutes_to_read`. The server calculates it from `body`; it is not a column, and the client never sends it.

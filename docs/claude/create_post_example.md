@@ -20,13 +20,13 @@ Reference for the `POST /api/blog` handler: first with in-memory storage (Phase 
 
 ```json
 {
-	"title": "My Coffee Journey",
-	"summary": "Exploring unique brews",
-	"body": "Content here...",
-	"author_id": 1,
-	"published_on": "2026-11-14",
-	"category_ids": [1, 2],
-	"tag_ids": [1]
+  "title": "My Coffee Journey",
+  "summary": "Exploring unique brews",
+  "body": "Content here...",
+  "author_id": 1,
+  "published_on": "2026-11-14",
+  "category_ids": [1, 2],
+  "tag_ids": [1]
 }
 ```
 
@@ -42,15 +42,15 @@ There are no junction tables in memory. The id arrays live inside the post, whic
 
 ```typescript
 export interface Post {
-	id: number;
-	title: string;
-	summary: string;
-	body: string;
-	author_id: number;
-	published_on: string;
-	updated_at: string;
-	category_ids: number[];
-	tag_ids: number[];
+  id: number;
+  title: string;
+  summary: string;
+  body: string;
+  author_id: number;
+  published_on: string;
+  updated_at: string;
+  category_ids: number[];
+  tag_ids: number[];
 }
 
 export const posts: Post[] = [];
@@ -59,8 +59,8 @@ let lastId = 0;
 
 // A counter, not "last id + 1": an id is never reused after a delete.
 export function nextPostId(): number {
-	lastId += 1;
-	return lastId;
+  lastId += 1;
+  return lastId;
 }
 ```
 
@@ -73,7 +73,7 @@ import { nextPostId, posts, type Post } from '../data/posts.ts';
 export const postRouter = express.Router();
 
 function isIdList(value: unknown): value is number[] {
-	return Array.isArray(value) && value.every((item) => Number.isInteger(item));
+  return Array.isArray(value) && value.every((item) => Number.isInteger(item));
 }
 
 /**
@@ -85,56 +85,56 @@ function isIdList(value: unknown): value is number[] {
  * @access Public
  */
 postRouter.post('/', (req, res) => {
-	const {
-		title,
-		summary,
-		body,
-		author_id,
-		published_on,
-		category_ids,
-		tag_ids,
-	} = req.body ?? {};
+  const {
+    title,
+    summary,
+    body,
+    author_id,
+    published_on,
+    category_ids,
+    tag_ids,
+  } = req.body ?? {};
 
-	if (
-		typeof title !== 'string' ||
-		title.trim() === '' ||
-		typeof summary !== 'string' ||
-		summary.trim() === '' ||
-		typeof body !== 'string' ||
-		body.trim() === ''
-	) {
-		res
-			.status(400)
-			.json({ error: 'Title, summary and body must be non-empty strings' });
-		return;
-	}
+  if (
+    typeof title !== 'string' ||
+    title.trim() === '' ||
+    typeof summary !== 'string' ||
+    summary.trim() === '' ||
+    typeof body !== 'string' ||
+    body.trim() === ''
+  ) {
+    res
+      .status(400)
+      .json({ error: 'Title, summary and body must be non-empty strings' });
+    return;
+  }
 
-	if (
-		!Number.isInteger(author_id) ||
-		!isIdList(category_ids) ||
-		!isIdList(tag_ids)
-	) {
-		res.status(400).json({
-			error:
-				'author_id must be a number; category_ids and tag_ids must be lists of numbers',
-		});
-		return;
-	}
+  if (
+    !Number.isInteger(author_id) ||
+    !isIdList(category_ids) ||
+    !isIdList(tag_ids)
+  ) {
+    res.status(400).json({
+      error:
+        'author_id must be a number; category_ids and tag_ids must be lists of numbers',
+    });
+    return;
+  }
 
-	const post: Post = {
-		id: nextPostId(),
-		title: title.trim(),
-		summary: summary.trim(),
-		body: body.trim(),
-		author_id,
-		published_on,
-		updated_at: new Date().toISOString(),
-		category_ids,
-		tag_ids,
-	};
-	posts.push(post);
+  const post: Post = {
+    id: nextPostId(),
+    title: title.trim(),
+    summary: summary.trim(),
+    body: body.trim(),
+    author_id,
+    published_on,
+    updated_at: new Date().toISOString(),
+    category_ids,
+    tag_ids,
+  };
+  posts.push(post);
 
-	res.status(201).json(post);
+  res.status(201).json(post);
 });
 ```
 
@@ -157,50 +157,50 @@ export const postRouter = express.Router();
 const PG_ERROR_STATUS: Record<string, number> = { '23503': 400 };
 
 postRouter.post('/', async (req, res) => {
-	// The same body validation as in Phase 1.
+  // The same body validation as in Phase 1.
 
-	const client = await pool.connect();
+  const client = await pool.connect();
 
-	try {
-		await client.query('BEGIN');
+  try {
+    await client.query('BEGIN');
 
-		const { rows } = await client.query<{ id: number }>(
-			`INSERT INTO post (title, summary, body, author_id, published_on, updated_at)
+    const { rows } = await client.query<{ id: number }>(
+      `INSERT INTO post (title, summary, body, author_id, published_on, updated_at)
 			 VALUES ($1, $2, $3, $4, $5, NOW())
 			 RETURNING id`,
-			[title, summary, body, author_id, published_on],
-		);
-		const postId = rows[0].id;
+      [title, summary, body, author_id, published_on],
+    );
+    const postId = rows[0].id;
 
-		for (const categoryId of category_ids) {
-			await client.query(
-				'INSERT INTO post_category (post_id, category_id) VALUES ($1, $2)',
-				[postId, categoryId],
-			);
-		}
-		for (const tagId of tag_ids) {
-			await client.query(
-				'INSERT INTO post_tag (post_id, tag_id) VALUES ($1, $2)',
-				[postId, tagId],
-			);
-		}
+    for (const categoryId of category_ids) {
+      await client.query(
+        'INSERT INTO post_category (post_id, category_id) VALUES ($1, $2)',
+        [postId, categoryId],
+      );
+    }
+    for (const tagId of tag_ids) {
+      await client.query(
+        'INSERT INTO post_tag (post_id, tag_id) VALUES ($1, $2)',
+        [postId, tagId],
+      );
+    }
 
-		await client.query('COMMIT');
+    await client.query('COMMIT');
 
-		// Read the post back with its category and tag ids, then send it with 201.
-	} catch (err) {
-		await client.query('ROLLBACK');
+    // Read the post back with its category and tag ids, then send it with 201.
+  } catch (err) {
+    await client.query('ROLLBACK');
 
-		const code = (err as { code?: string }).code ?? '';
-		const status = PG_ERROR_STATUS[code] ?? 500;
-		const error =
-			status === 400
-				? 'Author, category or tag does not exist'
-				: 'Internal Server Error';
-		res.status(status).json({ error });
-	} finally {
-		client.release();
-	}
+    const code = (err as { code?: string }).code ?? '';
+    const status = PG_ERROR_STATUS[code] ?? 500;
+    const error =
+      status === 400
+        ? 'Author, category or tag does not exist'
+        : 'Internal Server Error';
+    res.status(status).json({ error });
+  } finally {
+    client.release();
+  }
 });
 ```
 

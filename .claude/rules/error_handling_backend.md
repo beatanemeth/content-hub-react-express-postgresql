@@ -23,8 +23,8 @@ paths:
 const post = posts.find((item) => item.id === id);
 
 if (!post) {
-	res.status(404).json({ error: 'Post not found' });
-	return;
+  res.status(404).json({ error: 'Post not found' });
+  return;
 }
 ```
 
