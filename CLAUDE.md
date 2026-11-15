@@ -34,12 +34,14 @@ Update this tree whenever a file or folder is added.
 │   ├── pre-commit       # runs lint-staged
 │   └── prepare-commit-msg  # conventional merge messages
 ├── src/
+│   ├── controllers/
+│   │   └── postController.ts  # the handlers of the /api/blog endpoints
 │   ├── data/
 │   │   └── posts.ts     # Post interface: the shape of one post row
 │   ├── db/
 │   │   └── pool.ts      # the shared pg.Pool, built from DATABASE_URL
 │   ├── routes/
-│   │   └── postRoutes.ts  # postRouter: the /api/blog endpoints
+│   │   └── postRoutes.ts  # postRouter: maps each /api/blog path and method to a handler
 │   ├── app.ts           # the Express app: routes, later middleware
 │   └── server.ts        # checks the database, then starts the app on port 8000
 ├── .env.example         # variable names; copy to .env, which is never committed
