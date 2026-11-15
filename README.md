@@ -1,4 +1,4 @@
-# Minimal Express server with TypeScript
+# Content hub: a JSON REST API with Express, TypeScript and PostgreSQL
 
 This is a learning project to understand how an **Express** server is set up, in **TypeScript**, by building a small JSON REST API.
 
@@ -18,6 +18,45 @@ The full build log, step by step, is in [NOTES.md](NOTES.md).
 | Volta            | 1.1.1           |
 | TypeScript       | 6.0.3           |
 | Express          | 5.3.0           |
+| PostgreSQL       | 18 (Docker)     |
+
+<br>
+
+## Start the app
+
+Requirements: Node.js, npm and Docker with Docker Compose. Run each command in the repository root.
+
+1. **Install the dependencies:**
+
+   ```bash
+   npm install
+   ```
+
+2. **Create `.env`:** copy the example, then set a real user, password and database name. `DATABASE_URL` must use the same three values.
+
+   ```bash
+   cp .env.example .env
+   ```
+
+3. **Start the database:** on its first start, the container creates the tables and loads the seed data from `db/`.
+
+   ```bash
+   docker compose up -d
+   ```
+
+4. **Start the server:**
+
+   ```bash
+   npm run dev
+   ```
+
+   **Expected result:** `Server listening on http://localhost:8000`. The API is at `http://localhost:8000/api/blog`.
+
+5. **Stop:** press `Ctrl+C` to stop the server, then stop the database. The data stays in the Docker volume.
+
+   ```bash
+   docker compose down
+   ```
 
 <br>
 

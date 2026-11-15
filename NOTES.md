@@ -228,21 +228,23 @@ Tested through the REST Client extension in VS Code (`blog.http`).
 
 - **Data survives restarts:** PostgreSQL keeps its data in a Docker volume, so the data is still there after the server or the container restarts.
 
+![Database schema](docs/assets/db-schema.png)
+
 **Decision:** the `pg` client with `@types/pg`, PostgreSQL alone in Docker, and the settings in a `.env` file read by `node --env-file=.env`. See details: [Database set-up](docs/notes/info_db_setup.md).
 
 <br>
 
 ### Order of work
 
-The work is split over two branches. This branch adds the database and connects the server to it; the route handlers do not change.
+The work has two stages. The first adds the database and connects the server to it; the route handlers do not change. The second moves the handlers to SQL queries.
 
-**This branch (`chore/database-docker`):**
+**Stage 1: database and connection**
 
 1. **Container:** `docker-compose.yaml` and `.env.example`. Start the container and connect with `psql`.
 2. **Schema and seed data:** SQL files in `db/init/` create the tables and load the CSV files from `db/seed/`. The container runs them only when the volume is empty.
 3. **Connection pool:** install `pg` and add `src/db/pool.ts`. The server checks the connection at start-up.
 
-**Next branch (SQL queries):**
+**Stage 2: SQL queries in the handlers**
 
 4. **Handlers:** move each handler to a SQL query, one at a time. Each handler becomes `async` and wraps its query in `try/catch`, which answers `500` when the query fails.
 5. **Clean-up:** delete the in-memory array and the id counter. PostgreSQL creates the ids.
