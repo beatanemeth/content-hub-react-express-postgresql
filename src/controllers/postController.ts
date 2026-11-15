@@ -103,14 +103,9 @@ export const getAllPosts: RequestHandler = async (_req, res) => {
  * @errors 500 'Internal Server Error'
  * @access Public
  */
-export const getPostById: RequestHandler = async (req, res) => {
-  /* Path parameters are always strings. PostgreSQL rejects NaN or 1.5 for an integer column, so answer 404 before the query. */
-  const id = Number(req.params.id);
-
-  if (!Number.isInteger(id)) {
-    res.status(404).json({ error: 'Post not found' });
-    return;
-  }
+export const getPostById: RequestHandler = async (_req, res) => {
+  /* checkPostId has already checked the id; res.locals values are typed any, so the annotation restores number. */
+  const id: number = res.locals.postId;
 
   /* $1 is a placeholder: pg sends id separately from the SQL text, so the value can never change the query. */
   const result = await pool.query<Post>(`${SELECT_POST} WHERE p.id = $1`, [id]);
@@ -225,12 +220,7 @@ export const updatePost: RequestHandler = async (req, res) => {
     return;
   }
 
-  const id = Number(req.params.id);
-
-  if (!Number.isInteger(id)) {
-    res.status(404).json({ error: 'Post not found' });
-    return;
-  }
+  const id: number = res.locals.postId;
 
   const {
     title,
@@ -307,13 +297,8 @@ export const updatePost: RequestHandler = async (req, res) => {
  * @errors 500 'Internal Server Error'
  * @access Public
  */
-export const deletePost: RequestHandler = async (req, res) => {
-  const id = Number(req.params.id);
-
-  if (!Number.isInteger(id)) {
-    res.status(404).json({ error: 'Post not found' });
-    return;
-  }
+export const deletePost: RequestHandler = async (_req, res) => {
+  const id: number = res.locals.postId;
 
   /* One statement, so no transaction: ON DELETE CASCADE in the schema removes the link rows too. */
   const result = await pool.query('DELETE FROM post WHERE id = $1', [id]);
