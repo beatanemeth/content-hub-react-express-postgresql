@@ -1,8 +1,6 @@
 ---
 paths:
   - 'backend/**'
-  - 'src/routes/**'
-  - 'src/controllers/**'
 ---
 
 # Rules: minimal error handling in the backend
