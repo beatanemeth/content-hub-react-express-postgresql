@@ -65,6 +65,19 @@ Content-Type: application/json
   "tag_ids": [1]
 }
 
+### Create a post without published_on (400)
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "title": "My Coffee Journey",
+  "summary": "Exploring unique brews",
+  "body": "Content here...",
+  "author_id": 1,
+  "category_ids": [1, 2],
+  "tag_ids": [1]
+}
+
 ### Create a post with an author that does not exist (400)
 POST {{baseUrl}}
 Content-Type: application/json
