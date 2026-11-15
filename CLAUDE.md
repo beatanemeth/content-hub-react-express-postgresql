@@ -23,11 +23,20 @@ Update this tree whenever a file or folder is added.
 │   ├── skills/          # /commit
 │   └── settings.json    # permissions
 ├── docs/
-│   └── claude/          # additional files for Claude used in .claude/rules/
-│       └── assets/      # page mock-ups
+│   ├── claude/          # additional files for Claude used in .claude/rules/
+│   │   └── assets/      # page mock-ups
+│   └── notes/           # set-up manuals linked from NOTES.md
+├── .husky/
+│   ├── pre-commit       # runs lint-staged
+│   └── prepare-commit-msg  # conventional merge messages
 ├── .gitignore
+├── .prettierignore
+├── .prettierrc.json     # Prettier options and plugins
 ├── CLAUDE.md
+├── eslint.config.js     # ESLint rules for TypeScript and Node.js
 ├── NOTES.md             # build log: commands, files, checks, in build order
+├── package-lock.json
+├── package.json         # scripts, dev dependencies, Volta pin
 └── README.md            # purpose, tool versions, local Git set-up
 ```
 

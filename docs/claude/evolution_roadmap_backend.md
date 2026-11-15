@@ -20,36 +20,36 @@ import { nextPostId, posts, type Post } from '../data/posts.ts';
 export const postRouter = express.Router();
 
 postRouter.get('/', (_req, res) => {
-	res.json(posts);
+  res.json(posts);
 });
 
 postRouter.post('/', (req, res) => {
-	const { title, summary, body } = req.body ?? {};
+  const { title, summary, body } = req.body ?? {};
 
-	if (
-		typeof title !== 'string' ||
-		title.trim() === '' ||
-		typeof summary !== 'string' ||
-		summary.trim() === '' ||
-		typeof body !== 'string' ||
-		body.trim() === ''
-	) {
-		res
-			.status(400)
-			.json({ error: 'Title, summary and body must be non-empty strings' });
-		return;
-	}
+  if (
+    typeof title !== 'string' ||
+    title.trim() === '' ||
+    typeof summary !== 'string' ||
+    summary.trim() === '' ||
+    typeof body !== 'string' ||
+    body.trim() === ''
+  ) {
+    res
+      .status(400)
+      .json({ error: 'Title, summary and body must be non-empty strings' });
+    return;
+  }
 
-	// Shortened: the full handler (author, date, category and tag ids) is in create_post_example.md.
-	const post: Post = {
-		id: nextPostId(),
-		title: title.trim(),
-		summary: summary.trim(),
-		body: body.trim(),
-	};
-	posts.push(post);
+  // Shortened: the full handler (author, date, category and tag ids) is in create_post_example.md.
+  const post: Post = {
+    id: nextPostId(),
+    title: title.trim(),
+    summary: summary.trim(),
+    body: body.trim(),
+  };
+  posts.push(post);
 
-	res.status(201).json(post);
+  res.status(201).json(post);
 });
 ```
 
@@ -71,12 +71,12 @@ import { pool } from '../db/database.ts';
 export const postRouter = express.Router();
 
 postRouter.get('/', async (_req, res) => {
-	try {
-		const result = await pool.query('SELECT * FROM post ORDER BY id ASC');
-		res.json(result.rows);
-	} catch (err) {
-		res.status(500).json({ error: 'Database error while fetching posts' });
-	}
+  try {
+    const result = await pool.query('SELECT * FROM post ORDER BY id ASC');
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: 'Database error while fetching posts' });
+  }
 });
 ```
 
@@ -97,8 +97,8 @@ import { Request, Response } from 'express';
 import { pool } from '../db/database.ts';
 
 export async function getPosts(_req: Request, res: Response) {
-	const result = await pool.query('SELECT * FROM post ORDER BY id ASC');
-	res.json(result.rows);
+  const result = await pool.query('SELECT * FROM post ORDER BY id ASC');
+  res.json(result.rows);
 }
 
 // 2. Router (src/routes/postRoutes.ts)
@@ -121,14 +121,14 @@ postRouter.get('/', getPosts);
 import { Request, Response, NextFunction } from 'express';
 
 export function errorHandler(
-	err: any,
-	_req: Request,
-	res: Response,
-	_next: NextFunction,
+  err: any,
+  _req: Request,
+  res: Response,
+  _next: NextFunction,
 ) {
-	console.error(err.stack);
-	const status = err.status || 500;
-	res.status(status).json({ error: err.message || 'Internal Server Error' });
+  console.error(err.stack);
+  const status = err.status || 500;
+  res.status(status).json({ error: err.message || 'Internal Server Error' });
 }
 ```
 
@@ -136,16 +136,16 @@ export function errorHandler(
 
 ```typescript
 export async function getPosts(
-	_req: Request,
-	res: Response,
-	next: NextFunction,
+  _req: Request,
+  res: Response,
+  next: NextFunction,
 ) {
-	try {
-		const result = await pool.query('SELECT * FROM post ORDER BY id ASC');
-		res.json(result.rows);
-	} catch (err) {
-		next(err); // Hands error directly to errorHandler middleware
-	}
+  try {
+    const result = await pool.query('SELECT * FROM post ORDER BY id ASC');
+    res.json(result.rows);
+  } catch (err) {
+    next(err); // Hands error directly to errorHandler middleware
+  }
 }
 ```
 
@@ -161,11 +161,11 @@ export async function getPosts(
 import { Request, Response, NextFunction } from 'express';
 
 export function requestLogger(
-	req: Request,
-	_res: Response,
-	next: NextFunction,
+  req: Request,
+  _res: Response,
+  next: NextFunction,
 ) {
-	console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
-	next();
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+  next();
 }
 ```
