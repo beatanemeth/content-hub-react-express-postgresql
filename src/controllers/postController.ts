@@ -32,6 +32,25 @@ export function withMinutesToRead(post: Post): PostResponse {
 }
 
 /**
+ * @desc List all posts
+ * @route GET /api/blog
+ * @success 200, an array of posts ([] when there are none)
+ * @errors 500 'Internal Server Error'
+ * @access Public
+ */
+export const getAllPosts: RequestHandler = async (_req, res) => {
+  try {
+    const result = await pool.query<Post>(`${SELECT_POST} ORDER BY p.id`);
+
+    res.json(result.rows.map(withMinutesToRead));
+  } catch (error) {
+    /* The details stay in the server log; the client gets only the generic message. */
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+/**
  * @desc Get one post
  * @route GET /api/blog/:id
  * @success 200, the post
