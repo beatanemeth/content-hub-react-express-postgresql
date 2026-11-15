@@ -156,7 +156,7 @@ export async function getPosts(
 
 **Goal:** Add lightweight utility middlewares (such as request loggers or custom input sanity checks) to handle cross-cutting concerns cleanly.
 
-### Example code (`src/middleware/loggerMiddleware.ts`)
+### Example code (`src/middleware/requestLogger.ts`)
 
 ```typescript
 import { Request, Response, NextFunction } from 'express';
