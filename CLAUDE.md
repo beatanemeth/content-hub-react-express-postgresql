@@ -59,9 +59,13 @@ Update this tree whenever a file or folder is added.
 │   │   └── favicon.svg      # the browser tab icon
 │   ├── src/
 │   │   ├── components/
+│   │   │   ├── Button.tsx       # a link or a button in the primary, secondary or tertiary style
 │   │   │   ├── Footer.tsx       # the copyright line and the legal links
 │   │   │   ├── Header.tsx       # the logo (to Home) and the main navigation
-│   │   │   └── Layout.tsx       # the shared page frame; the matched page appears at <Outlet />
+│   │   │   ├── Layout.tsx       # the shared page frame; the matched page appears at <Outlet />
+│   │   │   └── PostCard.tsx     # one post in the list: title, meta line, summary and Read
+│   │   ├── data/
+│   │   │   └── posts.ts         # Post, Person, Category and Tag interfaces and the placeholder lists, until the API is wired up
 │   │   ├── pages/
 │   │   │   ├── BlogList.tsx     # the post list at /blog
 │   │   │   ├── Home.tsx         # the home page at /
