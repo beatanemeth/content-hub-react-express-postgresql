@@ -6,6 +6,9 @@ import { pool } from '../db/pool.ts';
 /* An average adult reading speed for plain text. */
 const WORDS_PER_MINUTE = 200;
 
+/* The text form of a PostgreSQL date column, for example '2026-11-14'. */
+const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+
 /*
  * The columns of one post, shared by the handlers that return posts; each adds its own WHERE or ORDER BY.
  * ARRAY(subquery) collects a post's link rows into one list, and gives {} (not NULL) when there are none.
@@ -44,8 +47,15 @@ function findPostBodyError(
   requestBody: Record<string, unknown> | undefined,
 ): string | null {
   /* req.body is undefined when the request has no JSON body; ?? {} keeps the destructuring safe. */
-  const { title, summary, body, author_id, category_ids, tag_ids } =
-    requestBody ?? {};
+  const {
+    title,
+    summary,
+    body,
+    author_id,
+    published_on,
+    category_ids,
+    tag_ids,
+  } = requestBody ?? {};
 
   if (
     typeof title !== 'string' ||
@@ -64,6 +74,11 @@ function findPostBodyError(
     !isIdList(tag_ids)
   ) {
     return 'author_id must be a number; category_ids and tag_ids must be lists of numbers';
+  }
+
+  /* Without this check, a missing or malformed date reaches PostgreSQL and fails there with a 500. */
+  if (typeof published_on !== 'string' || !DATE_PATTERN.test(published_on)) {
+    return 'published_on must be a date in the form YYYY-MM-DD';
   }
 
   return null;
@@ -130,6 +145,7 @@ postRouter.get('/:id', async (req, res) => {
  * @success 201, the new post
  * @errors 400 'Title, summary and body must be non-empty strings'
  * @errors 400 'author_id must be a number; category_ids and tag_ids must be lists of numbers'
+ * @errors 400 'published_on must be a date in the form YYYY-MM-DD'
  * @errors 400 'Author, category or tag does not exist'
  * @errors 500 'Internal Server Error'
  * @access Public
@@ -209,6 +225,7 @@ postRouter.post('/', async (req, res) => {
  * @success 200, the updated post
  * @errors 400 'Title, summary and body must be non-empty strings'
  * @errors 400 'author_id must be a number; category_ids and tag_ids must be lists of numbers'
+ * @errors 400 'published_on must be a date in the form YYYY-MM-DD'
  * @errors 400 'Author, category or tag does not exist'
  * @errors 404 'Post not found'
  * @errors 500 'Internal Server Error'
