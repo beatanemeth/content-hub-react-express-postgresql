@@ -1,0 +1,46 @@
+name: CI
+
+# Controls when the workflow will run
+on:
+  pull_request:
+  push:
+    branches: ['main']
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# Grants the jobs read-only access to the repository; the minimum they need
+permissions:
+  contents: read
+
+# Cancels an older run on the same branch when a newer commit is pushed
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # One package in the root for now; split into backend and frontend jobs when those folders exist
+  checks:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+
+      # Installs the Node.js version pinned in package.json (volta.node) and caches npm downloads
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: package.json
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check formatting (Prettier)
+        run: npm run prettier
+
+      - name: Check code quality (ESLint)
+        run: npm run lint
+
+      # Node.js runs the .ts files directly, so there is no build; tsc only checks types
+      - name: Type-check (tsc)
+        run: npm run typecheck

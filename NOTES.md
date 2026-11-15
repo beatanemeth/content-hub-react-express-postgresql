@@ -380,3 +380,15 @@ npm run dev
 ```
 
 **Expected result:** an `ECONNREFUSED 127.0.0.1:5432` error and no `Server listening` line. `--watch` waits for a file change instead of exiting; stop it with `Ctrl+C`. Start the container again with `docker compose start`.
+
+<br>
+
+## CI workflow
+
+**One workflow file, one job:** [`ci.yml`](.github/workflows/ci.yml) holds one job, `checks`. It runs Prettier, ESLint and `tsc` from the root.
+
+- **One file:** all checks start on the same events (a pull request, a push to `main`). One file declares the trigger, the permissions and the cancel rule once, and GitHub shows the result as one CI run.
+- **One job:** the repository has one package in the root, so the checks share one `npm ci`. A second job would set up Node.js and install the same packages again.
+- **The same checks as on the laptop:** the job runs the npm scripts from `package.json`, so a local run and the CI run check the same rules.
+- **Later, one job per area:** when the code moves into `backend/` and `frontend/`, split the job so each one installs only its own lock file and a failure names the area.
+- **Separate files instead:** useful when the apps need different triggers, for example a backend workflow that runs only when `backend/` changes. Here every check runs on every change, so one file is enough.
