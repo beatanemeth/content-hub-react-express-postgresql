@@ -1,4 +1,4 @@
-import type { SubmitEvent } from 'react';
+import { type SubmitEvent, useState } from 'react';
 import { useParams } from 'react-router';
 import Button from '../components/Button.tsx';
 import {
@@ -28,7 +28,7 @@ interface CheckboxGroupProps {
   legend: string;
   name: string;
   items: (Category | Tag)[];
-  checkedIds: number[];
+  initialIds: number[];
 }
 
 // A fieldset groups the boxes, and its legend names the group for screen readers
@@ -36,28 +36,44 @@ const CheckboxGroup = ({
   legend,
   name,
   items,
-  checkedIds,
-}: CheckboxGroupProps) => (
-  <fieldset className={FIELD_STYLE}>
-    <legend className={LABEL_STYLE}>
-      {legend} <span className={HINT_STYLE}>(choose one or more)</span>
-      <RequiredMark />
-    </legend>
-    <div className="grid grid-cols-3 gap-x-6 gap-y-1">
-      {items.map((item) => (
-        <label key={item.id} className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            name={name}
-            value={item.id}
-            defaultChecked={checkedIds.includes(item.id)}
-          />
-          {item.label}
-        </label>
-      ))}
-    </div>
-  </fieldset>
-);
+  initialIds,
+}: CheckboxGroupProps) => {
+  const [selectedIds, setSelectedIds] = useState(initialIds);
+  // HTML has no "at least one box" rule, so every box is required until one is ticked
+  const isNoneSelected = selectedIds.length === 0;
+
+  const handleChange = (itemId: number) => {
+    setSelectedIds(
+      selectedIds.includes(itemId)
+        ? selectedIds.filter((selectedId) => selectedId !== itemId)
+        : [...selectedIds, itemId],
+    );
+  };
+
+  return (
+    <fieldset className={FIELD_STYLE}>
+      <legend className={LABEL_STYLE}>
+        {legend} <span className={HINT_STYLE}>(choose one or more)</span>
+        <RequiredMark />
+      </legend>
+      <div className="grid grid-cols-3 gap-x-6 gap-y-1">
+        {items.map((item) => (
+          <label key={item.id} className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              name={name}
+              value={item.id}
+              checked={selectedIds.includes(item.id)}
+              onChange={() => handleChange(item.id)}
+              required={isNoneSelected}
+            />
+            {item.label}
+          </label>
+        ))}
+      </div>
+    </fieldset>
+  );
+};
 
 export default function PostForm() {
   // Only /blog/:id/edit has an id; /blog/new has none
@@ -120,13 +136,13 @@ export default function PostForm() {
           legend="Post category"
           name="category_ids"
           items={CATEGORIES}
-          checkedIds={post?.category_ids ?? []}
+          initialIds={post?.category_ids ?? []}
         />
         <CheckboxGroup
           legend="Post tags"
           name="tag_ids"
           items={TAGS}
-          checkedIds={post?.tag_ids ?? []}
+          initialIds={post?.tag_ids ?? []}
         />
         <label className={FIELD_STYLE}>
           <span className={LABEL_STYLE}>
