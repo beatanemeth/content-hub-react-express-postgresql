@@ -8,6 +8,36 @@ function isIdList(value: unknown): value is number[] {
   return Array.isArray(value) && value.every((item) => Number.isInteger(item));
 }
 
+/* POST and PUT take the same body, so they share one check. Returns the error message, or null when the body is valid. */
+function findPostBodyError(
+  requestBody: Record<string, unknown> | undefined,
+): string | null {
+  /* req.body is undefined when the request has no JSON body; ?? {} keeps the destructuring safe. */
+  const { title, summary, body, author_id, category_ids, tag_ids } =
+    requestBody ?? {};
+
+  if (
+    typeof title !== 'string' ||
+    title.trim() === '' ||
+    typeof summary !== 'string' ||
+    summary.trim() === '' ||
+    typeof body !== 'string' ||
+    body.trim() === ''
+  ) {
+    return 'Title, summary and body must be non-empty strings';
+  }
+
+  if (
+    !Number.isInteger(author_id) ||
+    !isIdList(category_ids) ||
+    !isIdList(tag_ids)
+  ) {
+    return 'author_id must be a number; category_ids and tag_ids must be lists of numbers';
+  }
+
+  return null;
+}
+
 /**
  * @desc List all posts
  * @route GET /api/blog
@@ -48,7 +78,13 @@ postRouter.get('/:id', (req, res) => {
  * @access Public
  */
 postRouter.post('/', (req, res) => {
-  /* req.body is undefined when the request has no JSON body; ?? {} keeps the destructuring safe. */
+  const error = findPostBodyError(req.body);
+
+  if (error) {
+    res.status(400).json({ error });
+    return;
+  }
+
   const {
     title,
     summary,
@@ -57,33 +93,7 @@ postRouter.post('/', (req, res) => {
     published_on,
     category_ids,
     tag_ids,
-  } = req.body ?? {};
-
-  if (
-    typeof title !== 'string' ||
-    title.trim() === '' ||
-    typeof summary !== 'string' ||
-    summary.trim() === '' ||
-    typeof body !== 'string' ||
-    body.trim() === ''
-  ) {
-    res
-      .status(400)
-      .json({ error: 'Title, summary and body must be non-empty strings' });
-    return;
-  }
-
-  if (
-    !Number.isInteger(author_id) ||
-    !isIdList(category_ids) ||
-    !isIdList(tag_ids)
-  ) {
-    res.status(400).json({
-      error:
-        'author_id must be a number; category_ids and tag_ids must be lists of numbers',
-    });
-    return;
-  }
+  } = req.body;
 
   const post: Post = {
     id: nextPostId(),
@@ -99,4 +109,57 @@ postRouter.post('/', (req, res) => {
   posts.push(post);
 
   res.status(201).json(post);
+});
+
+/**
+ * @desc Replace a post
+ * @route PUT /api/blog/:id
+ * @success 200, the updated post
+ * @errors 400 'Title, summary and body must be non-empty strings'
+ * @errors 400 'author_id must be a number; category_ids and tag_ids must be lists of numbers'
+ * @errors 404 'Post not found'
+ * @access Public
+ */
+postRouter.put('/:id', (req, res) => {
+  const error = findPostBodyError(req.body);
+
+  if (error) {
+    res.status(400).json({ error });
+    return;
+  }
+
+  const id = Number(req.params.id);
+  /* findIndex, not find: the handler replaces the element at this position. */
+  const index = posts.findIndex((item) => item.id === id);
+
+  if (index === -1) {
+    res.status(404).json({ error: 'Post not found' });
+    return;
+  }
+
+  const {
+    title,
+    summary,
+    body,
+    author_id,
+    published_on,
+    category_ids,
+    tag_ids,
+  } = req.body;
+
+  /* PUT replaces the whole post: the id stays, every other field comes from the body. */
+  const post: Post = {
+    id,
+    title: title.trim(),
+    summary: summary.trim(),
+    body: body.trim(),
+    author_id,
+    published_on,
+    updated_at: new Date().toISOString(),
+    category_ids,
+    tag_ids,
+  };
+  posts[index] = post;
+
+  res.json(post);
 });

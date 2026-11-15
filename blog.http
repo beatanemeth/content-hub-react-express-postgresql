@@ -64,3 +64,48 @@ Content-Type: application/json
   "category_ids": [1, 2],
   "tag_ids": [1]
 }
+
+
+// ---------------------------------
+// Test: PUT /api/blog/:id
+// ---------------------------------
+### Replace a post
+PUT {{baseUrl}}/1
+Content-Type: application/json
+
+{
+  "title": "From a Borrowed Kitchen to Our Own Roastery",
+  "summary": "How a weekend pop-up grew into a roastery and café.",
+  "body": "We began as a weekend pop-up in a borrowed community kitchen.",
+  "author_id": 1,
+  "published_on": "2026-06-01",
+  "category_ids": [1],
+  "tag_ids": [2, 6]
+}
+
+### Replace a post that does not exist (404)
+PUT {{baseUrl}}/999
+Content-Type: application/json
+
+{
+  "title": "My Coffee Journey",
+  "summary": "Exploring unique brews",
+  "body": "Content here...",
+  "author_id": 1,
+  "published_on": "2026-11-14",
+  "category_ids": [1, 2],
+  "tag_ids": [1]
+}
+
+### Replace a post with a missing body field (400)
+PUT {{baseUrl}}/1
+Content-Type: application/json
+
+{
+  "title": "My Coffee Journey",
+  "summary": "Exploring unique brews",
+  "author_id": 1,
+  "published_on": "2026-11-14",
+  "category_ids": [1, 2],
+  "tag_ids": [1]
+}
