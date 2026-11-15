@@ -89,15 +89,10 @@ function findPostBodyError(
  * @access Public
  */
 export const getAllPosts: RequestHandler = async (_req, res) => {
-  try {
-    const result = await pool.query<Post>(`${SELECT_POST} ORDER BY p.id`);
+  /* No try/catch: if the query fails, Express 5 passes the rejected promise to errorHandler (500). */
+  const result = await pool.query<Post>(`${SELECT_POST} ORDER BY p.id`);
 
-    res.json(result.rows.map(withMinutesToRead));
-  } catch (error) {
-    /* The details stay in the server log; the client gets only the generic message. */
-    console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
+  res.json(result.rows.map(withMinutesToRead));
 };
 
 /**
@@ -117,23 +112,16 @@ export const getPostById: RequestHandler = async (req, res) => {
     return;
   }
 
-  try {
-    /* $1 is a placeholder: pg sends id separately from the SQL text, so the value can never change the query. */
-    const result = await pool.query<Post>(`${SELECT_POST} WHERE p.id = $1`, [
-      id,
-    ]);
-    const post = result.rows[0];
+  /* $1 is a placeholder: pg sends id separately from the SQL text, so the value can never change the query. */
+  const result = await pool.query<Post>(`${SELECT_POST} WHERE p.id = $1`, [id]);
+  const post = result.rows[0];
 
-    if (!post) {
-      res.status(404).json({ error: 'Post not found' });
-      return;
-    }
-
-    res.json(withMinutesToRead(post));
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
+  if (!post) {
+    res.status(404).json({ error: 'Post not found' });
+    return;
   }
+
+  res.json(withMinutesToRead(post));
 };
 
 /**
@@ -206,10 +194,11 @@ export const createPost: RequestHandler = async (req, res) => {
     /* 23503 = foreign key violation: an author, category or tag id does not exist. */
     if (error instanceof pg.DatabaseError && error.code === '23503') {
       res.status(400).json({ error: 'Author, category or tag does not exist' });
-    } else {
-      console.error(error);
-      res.status(500).json({ error: 'Internal Server Error' });
+      return;
     }
+
+    /* Any other error goes on to errorHandler (500); finally still runs first and releases the client. */
+    throw error;
   } finally {
     /* Runs after success and after an error: without it, the pool runs out of connections. */
     client.release();
@@ -299,13 +288,12 @@ export const updatePost: RequestHandler = async (req, res) => {
   } catch (error) {
     await client.query('ROLLBACK');
 
-    /* 23503 = foreign key violation: an author, category or tag id does not exist. */
     if (error instanceof pg.DatabaseError && error.code === '23503') {
       res.status(400).json({ error: 'Author, category or tag does not exist' });
-    } else {
-      console.error(error);
-      res.status(500).json({ error: 'Internal Server Error' });
+      return;
     }
+
+    throw error;
   } finally {
     client.release();
   }
@@ -327,19 +315,14 @@ export const deletePost: RequestHandler = async (req, res) => {
     return;
   }
 
-  try {
-    /* One statement, so no transaction: ON DELETE CASCADE in the schema removes the link rows too. */
-    const result = await pool.query('DELETE FROM post WHERE id = $1', [id]);
+  /* One statement, so no transaction: ON DELETE CASCADE in the schema removes the link rows too. */
+  const result = await pool.query('DELETE FROM post WHERE id = $1', [id]);
 
-    if (result.rowCount === 0) {
-      res.status(404).json({ error: 'Post not found' });
-      return;
-    }
-
-    /* 204 No Content: success with no body, so end() instead of json(). */
-    res.status(204).end();
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
+  if (result.rowCount === 0) {
+    res.status(404).json({ error: 'Post not found' });
+    return;
   }
+
+  /* 204 No Content: success with no body, so end() instead of json(). */
+  res.status(204).end();
 };
