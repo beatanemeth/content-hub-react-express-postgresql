@@ -13,7 +13,7 @@ const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
  * The columns of one post, shared by the handlers that return posts; each adds its own WHERE or ORDER BY.
  * ARRAY(subquery) collects a post's link rows into one list, and gives {} (not NULL) when there are none.
  */
-export const SELECT_POST = `
+const SELECT_POST = `
   SELECT p.id, p.title, p.summary, p.body, p.author_id, p.published_on, p.updated_at,
     ARRAY(SELECT category_id FROM post_category WHERE post_id = p.id ORDER BY category_id) AS category_ids,
     ARRAY(SELECT tag_id FROM post_tag WHERE post_id = p.id ORDER BY tag_id) AS tag_ids
@@ -26,7 +26,7 @@ interface PostResponse extends Post {
 }
 
 /* Not stored: calculating it from body keeps it correct after every PUT. */
-export function withMinutesToRead(post: Post): PostResponse {
+function withMinutesToRead(post: Post): PostResponse {
   const wordCount = post.body.split(/\s+/).length;
 
   return {
@@ -40,7 +40,7 @@ function isIdList(value: unknown): value is number[] {
 }
 
 /* POST and PUT take the same body, so they share one check. Returns the error message, or null when the body is valid. */
-export function findPostBodyError(
+function findPostBodyError(
   requestBody: Record<string, unknown> | undefined,
 ): string | null {
   /* req.body is undefined when the request has no JSON body; ?? {} keeps the destructuring safe. */
@@ -212,6 +212,101 @@ export const createPost: RequestHandler = async (req, res) => {
     }
   } finally {
     /* Runs after success and after an error: without it, the pool runs out of connections. */
+    client.release();
+  }
+};
+
+/**
+ * @desc Replace a post
+ * @route PUT /api/blog/:id
+ * @success 200, the updated post
+ * @errors 400 'Title, summary and body must be non-empty strings'
+ * @errors 400 'author_id must be a number; category_ids and tag_ids must be lists of numbers'
+ * @errors 400 'published_on must be a date in the form YYYY-MM-DD'
+ * @errors 400 'Author, category or tag does not exist'
+ * @errors 404 'Post not found'
+ * @errors 500 'Internal Server Error'
+ * @access Public
+ */
+export const updatePost: RequestHandler = async (req, res) => {
+  const error = findPostBodyError(req.body);
+
+  if (error) {
+    res.status(400).json({ error });
+    return;
+  }
+
+  const id = Number(req.params.id);
+
+  if (!Number.isInteger(id)) {
+    res.status(404).json({ error: 'Post not found' });
+    return;
+  }
+
+  const {
+    title,
+    summary,
+    body,
+    author_id,
+    published_on,
+    category_ids,
+    tag_ids,
+  } = req.body;
+
+  const client = await pool.connect();
+
+  try {
+    await client.query('BEGIN');
+
+    /* PUT replaces the whole post: the id stays, every other column comes from the body. */
+    const updated = await client.query(
+      `UPDATE post
+       SET title = $1, summary = $2, body = $3, author_id = $4, published_on = $5, updated_at = now()
+       WHERE id = $6`,
+      [title.trim(), summary.trim(), body.trim(), author_id, published_on, id],
+    );
+
+    /* rowCount is the number of rows the UPDATE changed: 0 means no post has this id. */
+    if (updated.rowCount === 0) {
+      await client.query('ROLLBACK');
+      res.status(404).json({ error: 'Post not found' });
+      return;
+    }
+
+    /* Replace the link rows: delete the old ones, then insert the ids from the body. */
+    await client.query('DELETE FROM post_category WHERE post_id = $1', [id]);
+    await client.query('DELETE FROM post_tag WHERE post_id = $1', [id]);
+
+    for (const categoryId of category_ids) {
+      await client.query(
+        'INSERT INTO post_category (post_id, category_id) VALUES ($1, $2)',
+        [id, categoryId],
+      );
+    }
+    for (const tagId of tag_ids) {
+      await client.query(
+        'INSERT INTO post_tag (post_id, tag_id) VALUES ($1, $2)',
+        [id, tagId],
+      );
+    }
+
+    await client.query('COMMIT');
+
+    const result = await client.query<Post>(`${SELECT_POST} WHERE p.id = $1`, [
+      id,
+    ]);
+    res.json(withMinutesToRead(result.rows[0]));
+  } catch (error) {
+    await client.query('ROLLBACK');
+
+    /* 23503 = foreign key violation: an author, category or tag id does not exist. */
+    if (error instanceof pg.DatabaseError && error.code === '23503') {
+      res.status(400).json({ error: 'Author, category or tag does not exist' });
+    } else {
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  } finally {
     client.release();
   }
 };
