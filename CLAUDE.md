@@ -31,6 +31,7 @@ Update this tree whenever a file or folder is added.
 ├── .prettierignore
 ├── .prettierrc.json     # Prettier options and plugins
 ├── CLAUDE.md
+├── eslint.config.js     # ESLint rules for TypeScript and Node.js
 ├── NOTES.md             # build log: commands, files, checks, in build order
 ├── package-lock.json
 ├── package.json         # scripts, dev dependencies, Volta pin
