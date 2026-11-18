@@ -2,9 +2,19 @@
 
 This is a learning project to understand how an **Express** server is set up, in **TypeScript**, by building a small JSON REST API, and to add a **React** frontend that calls it.
 
-The full build log, step by step, is in [NOTES.md](NOTES.md).
+> The full build log, step by step, is in [NOTES.md](NOTES.md).
+
+> The app has no sign-in or sign-up and only the blog post endpoints. The workaround for the missing parts, and the reasons for it, are in [info_out_of_scope_workaround.md](docs/notes/info_out_of_scope_workaround.md).
 
 > **Authorship note:** Planned by me, implemented with Claude Code. Content by me, wording by Claude.
+
+<br>
+
+## Architecture
+
+![Architecture: frontend, API and database](docs/assets/architecture.png)
+
+Solid arrows point from a file to the file that uses it; dashed arrows are HTTP requests.
 
 <br>
 
@@ -82,3 +92,19 @@ The planned evolution roadmap of the repo. Each version is built in phases: see 
 - v1: API endpoint development with in-memory storage, tested through the REST Client extension in VS Code (`backend/blog.http`)
 - v2: PostgreSQL integration
 - v3: simple frontend with React
+
+<br>
+
+## Page snapshots
+
+![Home page](docs/assets/ui_snapshots/01_home_page.png)
+
+![Blog posts listing page](docs/assets/ui_snapshots/02_blog_posts_listing_page.png)
+
+_Note: the next three images were taken at different zoom levels, so that each page fits on one screen._
+
+![Single blog post page](docs/assets/ui_snapshots/03_blog_single_post_page.png)
+
+![Edit blog post](docs/assets/ui_snapshots/04_blog_edit_post.png)
+
+![Create blog post](docs/assets/ui_snapshots/05_blog_create_post.png)

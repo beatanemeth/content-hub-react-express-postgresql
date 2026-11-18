@@ -35,13 +35,16 @@ function withMinutesToRead(post: Post): PostResponse {
 /**
  * @desc List all posts
  * @route GET /api/blog
- * @success 200, an array of posts ([] when there are none)
+ * @success 200, an array of posts, newest first ([] when there are none)
  * @errors 500 'Internal Server Error'
  * @access Public
  */
 export const getAllPosts: RequestHandler = async (_req, res) => {
   /* No try/catch: if the query fails, Express 5 passes the rejected promise to errorHandler (500). */
-  const result = await pool.query<Post>(`${SELECT_POST} ORDER BY p.id`);
+  /* Newest first; id breaks the tie between posts published on the same day. */
+  const result = await pool.query<Post>(
+    `${SELECT_POST} ORDER BY p.published_on DESC, p.id DESC`,
+  );
 
   res.json(result.rows.map(withMinutesToRead));
 };

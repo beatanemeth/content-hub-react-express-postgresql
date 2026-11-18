@@ -4,9 +4,26 @@ This file is the build log: the commands, files and checks, in the order the pro
 
 <br>
 
+## Table of contents
+
+- [Goal](#goal)
+- [Out of scope](#out-of-scope)
+- **Build log steps in development order**
+  1. [Local Git setup](#1-local-git-setup)
+  2. [Add project guide for Claude Code](#2-add-project-guide-for-claude-code)
+  3. [Coding guidelines](#3-coding-guidelines)
+  4. [Set up the Express server](#4-set-up-the-express-server)
+  5. [Create API routes](#5-create-api-routes)
+  6. [Integrate a database (PostgreSQL)](#6-integrate-a-database-postgresql)
+  7. [CI workflow](#7-ci-workflow)
+  8. [Move the backend into `backend/`](#8-move-the-backend-into-backend)
+  9. [React frontend](#9-react-frontend)
+
+<br>
+
 ## Goal
 
-The project teaches how an **Express** server is set up in **TypeScript** by building a small JSON REST API. The data is stored in **PostgreSQL**, and a **React** frontend comes later.
+The project teaches how an **Express** server is set up in **TypeScript** by building a small JSON REST API. The data is stored in **PostgreSQL**, and a **React** frontend calls the API.
 
 <br>
 
@@ -14,16 +31,18 @@ The project teaches how an **Express** server is set up in **TypeScript** by bui
 
 - **Sign-in and sign-up:** there is none; every staff member may create, edit and delete posts. The Author dropdown chooses who wrote the post; without sign-in, the API cannot check who sent the request.
 - **Protected routes:** no page or endpoint checks who is calling.
-- **Detailed input validation:** the browser checks only that each field is filled in (`required`), and the API checks only that `title`, `summary` and `body` are non-empty strings and that `author_id`, `category_ids` and `tag_ids` hold numbers (otherwise it answers `400`). A non-numeric post id is not validated; it matches no post and returns `404`. The database still enforces its own rules, such as unique labels and required columns.
+- **Detailed input validation:** the browser checks only that each field is filled in (`required`), and the API checks only that `title`, `summary` and `body` are non-empty strings, that `author_id`, `category_ids` and `tag_ids` hold integers, and that `published_on` is a real date in the form `YYYY-MM-DD` (otherwise it answers `400`). A post id that is not an integer gets `404` from `checkPostId`, before any query. The database still enforces its own rules, such as unique labels and required columns.
 - **Error screens:** the UI shows the API's error message as plain text. There are no error pages, toast messages or retry buttons.
 - **Pages beyond the blog:** About, Events, Contact and the footer links show the not-found page.
 - **Mobile layout:** the UI is designed for desktop screens only.
 - **Automated tests:** the endpoints are checked by hand with `backend/blog.http`.
 - **Deployment:** the app runs only on a local machine.
 
+> The workaround for the out-of-scope parts, and the reasons for it, are in [info_out_of_scope_workaround.md](docs/notes/info_out_of_scope_workaround.md).
+
 <br>
 
-**Build log steps in development order**
+**Build log steps in development order:**
 
 ## 1. Local Git setup
 
@@ -46,6 +65,8 @@ The `prepare-commit-msg` hook rewrites merge messages to `chore: merge branch '<
 <br>
 
 ## 2. Add project guide for Claude Code
+
+[CLAUDE.md](CLAUDE.md) gives Claude Code the project context, the repository layout and the docs to read for each layer. The rules in `.claude/rules/` set how Claude works and writes, the `/commit` skill in `.claude/skills/` prepares commits, and `.claude/settings.json` holds the permissions.
 
 <br>
 
@@ -81,11 +102,8 @@ The root `package.json` from step 3 already holds the settings the server needs:
 
 ### 4.2 Choose how to run TypeScript
 
-**Decision:** Node.js type stripping. Node.js removes the type annotations itself and runs the `.ts` files directly, with no build step and no extra tool. Node.js 24 supports it without any set-up (22.18.0 or newer is needed).
+**Decision:** Node.js type stripping. Node.js removes the type annotations itself and runs the `.ts` files directly, with no build step and no extra tool. `node --watch src/server.ts` runs the server, and `tsc --noEmit` checks the types. See details: [TypeScript set-up](docs/notes/info_typescript_setup.md).
 
-- **No build step:** `node --watch src/server.ts` runs the `.ts` file directly, and `--watch` restarts it when a file changes. The project needs neither `ts-node` nor `nodemon`.
-- **Separate type check:** type stripping removes the types but does not check them, so `tsc --noEmit` checks them.
-- **Erasable syntax only:** TypeScript features that generate JavaScript, such as `enum` and `namespace`, do not work. The `erasableSyntaxOnly` setting (step 4.4) reports them in the editor.
 - **File extensions in imports:** write `import { app } from './app.ts'`, not `'./app'`.
 
 Both commands become npm scripts in step 4.6.
@@ -140,6 +158,8 @@ The generated `tsconfig.json` is long and mostly comments. Replace its content w
 - **`"include": ["src"]`:** `tsc` checks only the server code, not root files such as `eslint.config.js`.
 - **No input files yet:** until `src/` holds a `.ts` file, `npx tsc --noEmit` reports "No inputs were found". This is expected.
 
+See details: [`tsconfig.json` settings](docs/notes/info_typescript_setup.md#tsconfigjson-settings).
+
 <br>
 
 ### 4.5 Create the Express server
@@ -169,6 +189,8 @@ The three scripts join the Prettier, ESLint and Husky scripts from step 3:
 ```
 
 - **`start`:** runs the server once, without restarting it when a file changes.
+
+See details: [The npm scripts](docs/notes/info_typescript_setup.md#the-npm-scripts).
 
 <br>
 
@@ -206,7 +228,7 @@ Expected result: no output and no errors.
 
 <br>
 
-## Create API routes
+## 5. Create API routes
 
 Blog post endpoints:
 
@@ -222,7 +244,7 @@ Tested through the REST Client extension in VS Code (`blog.http`).
 
 <br>
 
-## Integrate a database (PostgreSQL)
+## 6. Integrate a database (PostgreSQL)
 
 **Goal:** move the data from the in-memory array to PostgreSQL. The endpoints and the contract stay the same; only the data layer behind the routes changes.
 
@@ -383,7 +405,7 @@ npm run dev
 
 <br>
 
-## CI workflow
+## 7. CI workflow
 
 **One workflow file, one job:** [`ci.yml`](.github/workflows/ci.yml) holds one job, `checks`. It runs Prettier, ESLint and `tsc` from the root.
 
@@ -395,7 +417,7 @@ npm run dev
 
 <br>
 
-## Move the backend into `backend/`
+## 8. Move the backend into `backend/`
 
 **Goal:** prepare the repository for a React frontend. The backend becomes its own npm package in `backend/`; `frontend/` will be a second one.
 
@@ -446,3 +468,21 @@ npx lint-staged --diff=HEAD --verbose
 ```
 
 **Expected result:** the files in `backend/` match the backend config (ESLint, then Prettier), the root files match the root config, and every task completes. `--diff=HEAD` checks the changed files without staging them.
+
+<br>
+
+## 9. React frontend
+
+**Goal:** a React app in `frontend/` that shows the blog and calls the API. It was built in phases: first static pages with placeholder data, then the API calls.
+
+- **Vite proxy:** the dev server forwards `/api` requests to `http://localhost:8000`. The browser sees one origin, so the backend needs no CORS.
+
+### Check: the app runs
+
+```bash
+docker compose up -d           # in the root
+cd backend && npm run dev      # first terminal
+cd frontend && npm run dev     # second terminal
+```
+
+**Expected result:** `http://localhost:5173/blog` lists the posts, newest first. A new post, an edit and a delete appear in the list. With the backend stopped, the page shows "Cannot reach the server. Check that the backend is running."

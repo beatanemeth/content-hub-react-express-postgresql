@@ -1,0 +1,172 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Architecture" id="architecture">
+    <mxGraphModel dx="1200" dy="700" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="1200" pageHeight="640" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="col_frontend" value="Frontend: React" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;verticalAlign=top;fontStyle=1;fontSize=14;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="40" y="0" width="360" height="600" as="geometry" />
+        </mxCell>
+        <mxCell id="col_api" value="API: Express" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;verticalAlign=top;fontStyle=1;fontSize=14;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="400" y="0" width="360" height="600" as="geometry" />
+        </mxCell>
+        <mxCell id="col_db" value="Database: pg and PostgreSQL" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;verticalAlign=top;fontStyle=1;fontSize=14;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="760" y="0" width="360" height="600" as="geometry" />
+        </mxCell>
+
+        <!-- Frontend -->
+        <mxCell id="vite" value="Vite dev server&lt;br&gt;&lt;font style=&quot;font-size: 11px;&quot;&gt;vite.config.ts,&lt;br&gt;@tailwindcss/vite&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="145" y="60" width="150" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="apptsx" value="main.tsx&lt;br&gt;App.tsx" style="rounded=1;whiteSpace=wrap;html=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="145" y="170" width="150" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="pages" value="pages/*.tsx&lt;br&gt;components/*.tsx" style="rounded=1;whiteSpace=wrap;html=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="145" y="280" width="150" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="lists" value="data/&lt;br&gt;lists.ts" style="rounded=1;whiteSpace=wrap;html=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="85" y="390" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="apiposts" value="api/&lt;br&gt;posts.ts" style="rounded=1;whiteSpace=wrap;html=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="235" y="390" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="css" value="globals.css" style="rounded=1;whiteSpace=wrap;html=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="145" y="500" width="150" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- API -->
+        <mxCell id="server" value="server.ts" style="rounded=1;whiteSpace=wrap;html=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="430" y="60" width="150" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="app" value="app.ts" style="rounded=1;whiteSpace=wrap;html=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="430" y="170" width="150" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="route" value="routes/&lt;br&gt;postRoutes.ts" style="rounded=1;whiteSpace=wrap;html=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="430" y="280" width="150" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="controller" value="controllers/&lt;br&gt;postController.ts" style="rounded=1;whiteSpace=wrap;html=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="430" y="390" width="150" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="pool" value="db/&lt;br&gt;pool.ts" style="rounded=1;whiteSpace=wrap;html=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="865" y="170" width="150" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="middleware" value="middleware/&lt;br&gt;*.ts" style="rounded=1;whiteSpace=wrap;html=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="610" y="225" width="120" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Database -->
+        <mxCell id="sql" value="db/init/*.sql&lt;br&gt;db/seed/*.csv" style="rounded=1;whiteSpace=wrap;html=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="865" y="500" width="150" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="pg" value="PostgreSQL 18&lt;br&gt;(Docker)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=12;fontSize=13;fillColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="885" y="45" width="110" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Frontend edges -->
+        <mxCell id="e_request" value="HTTP request" style="endArrow=classic;html=1;dashed=1;strokeWidth=2;fontColor=#FF0000;fontStyle=1;fontSize=13;labelBackgroundColor=#ffffff;entryX=0;entryY=0.4;entryDx=0;entryDy=0;" edge="1" parent="1" target="vite">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-40" y="84" as="sourcePoint" />
+            <mxPoint x="145" y="84" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_apptsx_vite" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;strokeColor=#A50040;strokeWidth=2;" edge="1" parent="1" source="apptsx" target="vite">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_pages_apptsx" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;strokeColor=#A50040;strokeWidth=2;" edge="1" parent="1" source="pages" target="apptsx">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_lists_pages" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;strokeColor=#A50040;strokeWidth=2;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.25;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="lists" target="pages">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_apiposts_pages" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;strokeColor=#A50040;strokeWidth=2;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.75;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="apiposts" target="pages">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_css_apptsx" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;strokeColor=#A50040;strokeWidth=2;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="css" target="apptsx">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="60" y="530" />
+              <mxPoint x="60" y="200" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_apiposts_vite" value="fetch&lt;br&gt;/api/blog" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;dashed=1;strokeColor=#A50040;strokeWidth=2;fontSize=11;labelBackgroundColor=#e1d5e7;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.7;entryDx=0;entryDy=0;" edge="1" parent="1" source="apiposts" target="vite">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="375" y="420" />
+              <mxPoint x="375" y="102" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_vite_server" value="proxy /api" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;dashed=1;strokeColor=#A50040;strokeWidth=2;fontSize=11;labelBackgroundColor=#ffffff;exitX=1;exitY=0.3;exitDx=0;exitDy=0;entryX=0;entryY=0.3;entryDx=0;entryDy=0;" edge="1" parent="1" source="vite" target="server">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- API edges -->
+        <mxCell id="e_app_server" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;strokeColor=#001DBC;strokeWidth=2;" edge="1" parent="1" source="app" target="server">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_route_app" value="/api/blog" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;strokeColor=#001DBC;strokeWidth=2;fontSize=11;labelBackgroundColor=#dae8fc;" edge="1" parent="1" source="route" target="app">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_controller_route" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;strokeColor=#001DBC;strokeWidth=2;" edge="1" parent="1" source="controller" target="route">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_middleware_app" value="requestLogger,&lt;br&gt;notFoundHandler,&lt;br&gt;errorHandler" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;strokeColor=#001DBC;strokeWidth=2;fontSize=11;labelBackgroundColor=#dae8fc;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="middleware" target="app">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_middleware_route" value="checkPostId,&lt;br&gt;checkPostInput" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;strokeColor=#001DBC;strokeWidth=2;fontSize=11;labelBackgroundColor=#dae8fc;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="middleware" target="route">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Database edges -->
+        <mxCell id="e_pg_pool" value="pg Pool" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;strokeColor=#005700;strokeWidth=2;fontSize=11;labelBackgroundColor=#d5e8d4;exitX=0.5;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="pg" target="pool">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_pool_server" value="SELECT 1&lt;br&gt;at start" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;strokeColor=#005700;strokeWidth=2;fontSize=11;labelBackgroundColor=#dae8fc;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.7;entryDx=0;entryDy=0;" edge="1" parent="1" source="pool" target="server">
+          <mxGeometry x="0.4" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="790" y="200" />
+              <mxPoint x="790" y="102" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_pool_controller" value="pool.query" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;strokeColor=#005700;strokeWidth=2;fontSize=11;labelBackgroundColor=#dae8fc;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="pool" target="controller">
+          <mxGeometry x="0.64" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="940" y="420" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_sql_pg" value="first start&lt;br&gt;(empty volume)" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;strokeColor=#005700;strokeWidth=2;fontSize=11;labelBackgroundColor=#d5e8d4;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="sql" target="pg">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1080" y="530" />
+              <mxPoint x="1080" y="85" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Legend -->
+        <mxCell id="legend_import_line" style="endArrow=classic;html=1;strokeColor=#333333;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="40" y="630" as="sourcePoint" />
+            <mxPoint x="100" y="630" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="legend_import_text" value="imported or used by" style="text;html=1;align=left;verticalAlign=middle;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="110" y="620" width="160" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_request_line" style="endArrow=classic;html=1;dashed=1;strokeColor=#333333;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="280" y="630" as="sourcePoint" />
+            <mxPoint x="340" y="630" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="legend_request_text" value="HTTP request" style="text;html=1;align=left;verticalAlign=middle;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="350" y="620" width="120" height="20" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

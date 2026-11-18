@@ -48,16 +48,21 @@ Update this tree whenever a file or folder is added.
 │   ├── init/            # 01-schema.sql, 02-seed.sql: run by the container when the volume is empty
 │   └── seed/            # CSV files loaded with COPY; the source of truth for the data
 ├── docs/
-│   ├── assets/          # db-schema.drawio and db-schema.png: the database schema diagram
+│   ├── assets/          # architecture.drawio and .png (the app diagram); db-schema.drawio and .png (the database schema)
+│   │   └── ui_snapshots/  # screenshots of the pages, linked from README.md and info_out_of_scope_workaround.md
 │   ├── claude/          # additional files for Claude used in .claude/rules/
 │   │   └── assets/      # page mock-ups
 │   └── notes/           # set-up manuals and decision notes linked from NOTES.md
 │       ├── info_db_setup.md  # database client, Docker and .env decisions
+│       ├── info_out_of_scope_workaround.md  # how the frontend and the API work without sign-in or author, category and tag endpoints
+│       ├── info_typescript_setup.md  # running TypeScript without a build: options, npm scripts, tsconfig.json
 │       └── manual_coding_guidelines.md  # Prettier, ESLint, Husky and lint-staged set-up
 ├── frontend/            # the React app: its own npm package, created with Vite
 │   ├── public/
 │   │   └── favicon.svg      # the browser tab icon
 │   ├── src/
+│   │   ├── api/
+│   │   │   └── posts.ts         # interface Post and one fetch function per /api/blog endpoint
 │   │   ├── components/
 │   │   │   ├── Button.tsx       # a link or a button in the primary, secondary or tertiary style
 │   │   │   ├── Footer.tsx       # the copyright line and the legal links
@@ -65,7 +70,7 @@ Update this tree whenever a file or folder is added.
 │   │   │   ├── Layout.tsx       # the shared page frame; the matched page appears at <Outlet />
 │   │   │   └── PostCard.tsx     # one post in the list: title, meta line, summary and Read
 │   │   ├── data/
-│   │   │   └── posts.ts         # Post, Person, Category and Tag interfaces and the placeholder lists, until the API is wired up
+│   │   │   └── lists.ts         # the staff, category and tag lists, copied from db/seed; the API returns only their ids
 │   │   ├── pages/
 │   │   │   ├── BlogList.tsx     # the post list at /blog
 │   │   │   ├── Home.tsx         # the home page at /
