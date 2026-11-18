@@ -8,7 +8,7 @@ Reference for the `POST /api/blog` handler: first with in-memory storage (Phase 
 
 - **The client sends ids, not names or labels:** the dropdown shows staff names and sends `author_id`. The checkboxes send `category_ids` and `tag_ids`. The code has no name-to-id lookup.
 - **Categories and tags are fixed lists:** they are seeded in the database. A post can link only to existing ones; the API never creates them.
-- **Form lists are hard-coded in the first frontend phase:** the staff, category and tag lists live in `frontend/src/data/` until the pages are connected to the API.
+- **Form lists are hard-coded in the frontend:** the staff, category and tag lists live in `frontend/src/data/lists.ts`, copied from `db/seed/`. No endpoint returns or changes them, so a change to a seed CSV needs the same change in `lists.ts`.
 - **JSON names are snake_case:** they match the database columns and `mock_data.js`, so `pg` rows need no renaming.
 - **The response is the post itself:** it has no `message` and no debug fields.
 

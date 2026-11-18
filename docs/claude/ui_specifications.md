@@ -51,7 +51,7 @@ Part of the [brand style guide](./brand_style_guide.md). Colours, fonts and logo
 - **Link or button:** Read, Add new post, Edit and Cancel go to another page, so they are links. Save and Delete perform an action, so they are buttons.
 - **Cancel:** on the new-post form it goes to `/blog`; on the edit form it goes to `/blog/:id`.
 - **Files:** the shared parts (`Layout`, `Header`, `Footer`, `Button`, `PostCard`) in `src/components/`; the five page components in `src/pages/`.
-- **Post data files:** `src/data/posts.ts` holds `interface Post` and the placeholder data until the pages are connected to the API. Then `src/api/posts.ts` holds `interface Post` and the API functions.
+- **Post data files:** `src/api/posts.ts` holds `interface Post` and one function per endpoint. `src/data/lists.ts` holds the staff, category and tag lists, copied from `db/seed/`, because the API returns only their ids.
 
 <br>
 
