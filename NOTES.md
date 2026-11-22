@@ -4,20 +4,22 @@ This file is the build log: the commands, files and checks, in the order the pro
 
 <br>
 
-## Table of contents
+## Contents
 
 - [Goal](#goal)
 - [Out of scope](#out-of-scope)
-- **Build log steps in development order**
-  1. [Local Git setup](#1-local-git-setup)
-  2. [Add project guide for Claude Code](#2-add-project-guide-for-claude-code)
-  3. [Coding guidelines](#3-coding-guidelines)
-  4. [Set up the Express server](#4-set-up-the-express-server)
-  5. [Create API routes](#5-create-api-routes)
-  6. [Integrate a database (PostgreSQL)](#6-integrate-a-database-postgresql)
-  7. [CI workflow](#7-ci-workflow)
-  8. [Move the backend into `backend/`](#8-move-the-backend-into-backend)
-  9. [React frontend](#9-react-frontend)
+
+**Build log steps in development order:**
+
+1. [Local Git setup](#1-local-git-setup)
+2. [Add project guide for Claude Code](#2-add-project-guide-for-claude-code)
+3. [Coding guidelines](#3-coding-guidelines)
+4. [Set up the Express server](#4-set-up-the-express-server)
+5. [Create API routes](#5-create-api-routes)
+6. [Integrate a database (PostgreSQL)](#6-integrate-a-database-postgresql)
+7. [CI workflow](#7-ci-workflow)
+8. [Move the backend into `backend/`](#8-move-the-backend-into-backend)
+9. [React frontend](#9-react-frontend)
 
 <br>
 

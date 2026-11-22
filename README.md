@@ -1,4 +1,4 @@
-# Content hub: a JSON REST API with Express, TypeScript and PostgreSQL
+# Content hub: a React frontend and a JSON REST API with Express, TypeScript and PostgreSQL
 
 This is a learning project to understand how an **Express** server is set up, in **TypeScript**, by building a small JSON REST API, and to add a **React** frontend that calls it.
 
@@ -7,6 +7,16 @@ This is a learning project to understand how an **Express** server is set up, in
 > The app has no sign-in or sign-up and only the blog post endpoints. The workaround for the missing parts, and the reasons for it, are in [info_out_of_scope_workaround.md](docs/notes/info_out_of_scope_workaround.md).
 
 > **Authorship note:** Planned by me, implemented with Claude Code. Content by me, wording by Claude.
+
+<br>
+
+## Evolution roadmap
+
+Each version is built in phases: see the [backend roadmap](docs/claude/evolution_roadmap_backend.md) and the [frontend roadmap](docs/claude/evolution_roadmap_frontend.md).
+
+- **v0.1.0:** API endpoint development with in-memory storage, tested through the REST Client extension in VS Code (`backend/blog.http`). [Release notes](https://github.com/beatanemeth/content-hub-react-express-postgresql/releases/tag/v0.1.0) · [Browse the code](https://github.com/beatanemeth/content-hub-react-express-postgresql/tree/9c238f2b5089c4416adb41e105afadceb13cafc1)
+- **v0.2.0:** PostgreSQL integration. [Release notes](https://github.com/beatanemeth/content-hub-react-express-postgresql/releases/tag/v0.2.0) · [Browse the code](https://github.com/beatanemeth/content-hub-react-express-postgresql/tree/819c4c31e0228b751f08021138e023f073213542)
+- **v0.3.0:** simple frontend with React. [Release notes](https://github.com/beatanemeth/content-hub-react-express-postgresql/releases/tag/v0.3.0) · Browse the code on the `main` branch
 
 <br>
 
@@ -82,16 +92,6 @@ Requirements: Node.js, npm and Docker with Docker Compose. Run each command in t
    ```bash
    docker compose down
    ```
-
-<br>
-
-## Evolution roadmap
-
-The planned evolution roadmap of the repo. Each version is built in phases: see the [backend roadmap](docs/claude/evolution_roadmap_backend.md) and the [frontend roadmap](docs/claude/evolution_roadmap_frontend.md).
-
-- v1: API endpoint development with in-memory storage, tested through the REST Client extension in VS Code (`backend/blog.http`)
-- v2: PostgreSQL integration
-- v3: simple frontend with React
 
 <br>
 
